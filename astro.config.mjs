@@ -5,4 +5,9 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
 	site: 'https://sipothemaster.github.io',
 	base: '/dfre-showcase',
+	vite: {
+		optimizeDeps: {
+			exclude: ['maplibre-gl'],
+		},
+	},
 });
