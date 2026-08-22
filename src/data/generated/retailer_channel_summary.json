@@ -1,0 +1,146 @@
+{
+  "title": "Direct and Just Eat grocery-delivery channels",
+  "claim_status": "descriptive",
+  "geography": "43,064 representative-postcode LSOA/Data Zone markets in Great Britain",
+  "justeat_source": "weekday_full_20260520 static delivery map",
+  "direct_source": "postcode-repaired retailer datasets assembled 2026-08-20",
+  "interpretation": "Just Eat only identifies areas where a brand was observed on Just Eat but the compared direct service returned No. It does not establish that Just Eat caused an expansion in coverage.",
+  "comparisons": [
+    {
+      "comparison": "coop",
+      "retailer_label": "Co-op",
+      "direct_service": "Co-op direct delivery",
+      "justeat_service": "Co-op on Just Eat",
+      "areas": 43064,
+      "categories": [
+        {
+          "category": "Both channels",
+          "count": 25618,
+          "percent": 59.49
+        },
+        {
+          "category": "Direct only",
+          "count": 2158,
+          "percent": 5.01
+        },
+        {
+          "category": "Just Eat only",
+          "count": 8282,
+          "percent": 19.23
+        },
+        {
+          "category": "Neither observed",
+          "count": 6995,
+          "percent": 16.24
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 11,
+          "percent": 0.03
+        }
+      ]
+    },
+    {
+      "comparison": "morrisons_fast",
+      "retailer_label": "Morrisons fast",
+      "direct_service": "Morrisons FastDelivery",
+      "justeat_service": "Morrisons on Just Eat",
+      "areas": 43064,
+      "categories": [
+        {
+          "category": "Both channels",
+          "count": 24269,
+          "percent": 56.36
+        },
+        {
+          "category": "Direct only",
+          "count": 819,
+          "percent": 1.9
+        },
+        {
+          "category": "Just Eat only",
+          "count": 10582,
+          "percent": 24.57
+        },
+        {
+          "category": "Neither observed",
+          "count": 7394,
+          "percent": 17.17
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 0,
+          "percent": 0.0
+        }
+      ]
+    },
+    {
+      "comparison": "sainsburys_fast",
+      "retailer_label": "Sainsbury's fast",
+      "direct_service": "Sainsbury's Chop Chop",
+      "justeat_service": "Sainsbury's on Just Eat",
+      "areas": 43064,
+      "categories": [
+        {
+          "category": "Both channels",
+          "count": 29559,
+          "percent": 68.64
+        },
+        {
+          "category": "Direct only",
+          "count": 903,
+          "percent": 2.1
+        },
+        {
+          "category": "Just Eat only",
+          "count": 4034,
+          "percent": 9.37
+        },
+        {
+          "category": "Neither observed",
+          "count": 8568,
+          "percent": 19.9
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 0,
+          "percent": 0.0
+        }
+      ]
+    },
+    {
+      "comparison": "iceland",
+      "retailer_label": "Iceland",
+      "direct_service": "Iceland standard delivery",
+      "justeat_service": "Iceland on Just Eat",
+      "areas": 43064,
+      "categories": [
+        {
+          "category": "Both channels",
+          "count": 32463,
+          "percent": 75.38
+        },
+        {
+          "category": "Direct only",
+          "count": 6284,
+          "percent": 14.59
+        },
+        {
+          "category": "Just Eat only",
+          "count": 261,
+          "percent": 0.61
+        },
+        {
+          "category": "Neither observed",
+          "count": 4056,
+          "percent": 9.42
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 0,
+          "percent": 0.0
+        }
+      ]
+    }
+  ]
+}
