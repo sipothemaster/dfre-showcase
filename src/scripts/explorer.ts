@@ -2,9 +2,13 @@ import {
 	LngLatBounds,
 	Map,
 	NavigationControl,
+	setWorkerUrl,
 	type ExpressionSpecification,
 	type MapGeoJSONFeature,
 } from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+
+setWorkerUrl(workerUrl);
 
 type MetricManifest = {
 	label: string;
