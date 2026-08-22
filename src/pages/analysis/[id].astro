@@ -1,0 +1,53 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+	const entries = await getCollection('analyses', ({ data }) => data.status === 'published');
+	return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+---
+
+<BaseLayout title={`${entry.data.title} · DFRE`} description={entry.data.dek}>
+	<header class="site-header site-shell analysis-header">
+		<a class="wordmark" href={base}>DFRE / Analysis</a>
+		<nav class="site-nav" aria-label="Analysis navigation">
+			<a href={`${base}#findings`}>All findings</a>
+			<a href={`${base}#methods`}>Methods</a>
+		</nav>
+	</header>
+
+	<main id="main-content" class="analysis-page">
+		<header class="analysis-hero site-shell">
+			<p class="eyebrow">{entry.data.claimStatus} analysis · {entry.data.geography}</p>
+			<h1>{entry.data.title}</h1>
+			<p class="hero-deck">{entry.data.dek}</p>
+		</header>
+
+		{entry.data.figure && (
+			<figure class="analysis-figure site-shell">
+				<img src={`${base}${entry.data.figure}`} alt={entry.data.figureAlt ?? ''} loading="eager" />
+				<figcaption>{entry.data.primaryMetric} · {entry.data.period}</figcaption>
+			</figure>
+		)}
+
+		<section class="analysis-body site-shell">
+			<article class="prose"><Content /></article>
+			<aside class="evidence-boundary">
+				<p class="section-kicker">Evidence boundary</p>
+				<dl>
+					<div><dt>Claim status</dt><dd>{entry.data.claimStatus}</dd></div>
+					<div><dt>Geography</dt><dd>{entry.data.geography}</dd></div>
+					<div><dt>Period</dt><dd>{entry.data.period}</dd></div>
+					<div><dt>Source project</dt><dd>{entry.data.sourceRepository}</dd></div>
+				</dl>
+				<h2>Limitations</h2>
+				<ul>{entry.data.limitations.map((limitation) => <li>{limitation}</li>)}</ul>
+			</aside>
+		</section>
+	</main>
+</BaseLayout>

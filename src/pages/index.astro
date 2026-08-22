@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PipelineFlow from '../components/PipelineFlow.astro';
+import ChannelComparison from '../components/ChannelComparison.astro';
+import ExposureFindings from '../components/ExposureFindings.astro';
+import { getCollection } from 'astro:content';
+
+const facts = [
+	{ value: '43,064', label: 'small-area markets' },
+	{ value: '16.5m', label: 'postcode–restaurant links' },
+	{ value: '100,850', label: 'restaurant profiles' },
+	{ value: '6', label: 'direct grocery services' },
+];
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const analysisModules = (await getCollection('analyses', ({ data }) => data.status === 'published'))
+	.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+	title="Britain's Digital Food Environment"
+	description="A spatial data project mapping restaurant and grocery delivery across Britain, from data engineering to demographic and statistical analysis."
+	socialImage="og.png"
+>
+	<header class="site-header site-shell">
+		<a class="wordmark" href="#overview">DFRE / Spatial data project</a>
+		<nav class="site-nav" aria-label="Primary navigation">
+			<a href="#overview">Overview</a>
+			<a href="#pipeline">Pipeline</a>
+			<a href="#findings">Findings</a>
+			<a href={`${base}explore/`}>Explore</a>
+			<a href="#methods">Methods</a>
+		</nav>
+	</header>
+
+	<main id="main-content">
+		<section class="hero site-shell" id="overview">
+			<div>
+				<p class="eyebrow">Digital food retail environment · Great Britain</p>
+				<h1>Mapping Britain's digital food environment</h1>
+				<p class="hero-deck">
+					An end-to-end spatial data project tracing how restaurant and grocery delivery vary across place—and what those patterns reveal about deprivation, rurality and population.
+				</p>
+				<div class="hero-tags" aria-label="Project disciplines">
+					<span>Data engineering</span>
+					<span>Spatial analysis</span>
+					<span>WebGIS</span>
+				</div>
+				<div class="hero-actions">
+					<a class="primary-action" href={`${base}explore/`}>Explore the interactive map <span aria-hidden="true">→</span></a>
+					<a class="secondary-action" href="#findings">Read the findings</a>
+				</div>
+			</div>
+
+			<aside class="scale-note" aria-label="Dataset scale">
+				<p>A national evidence base built from representative postcodes and area-level indicators.</p>
+				{facts.map((fact) => (
+					<div class="fact">
+						<span class="fact-value">{fact.value}</span>
+						<span class="fact-label">{fact.label}</span>
+					</div>
+				))}
+			</aside>
+		</section>
+
+		<section class="opening-statement site-shell">
+			<div class="article-column">
+				<p class="section-kicker">The project</p>
+				<h2>From millions of delivery relationships to evidence about place.</h2>
+				<p>
+					The project combines platform delivery records, retailer-specific availability checks and public demographic data. It turns postcode-level observations into comparable LSOA, Data Zone and MSOA measures—then uses maps and statistical analysis to examine where digital access is concentrated, absent or delivered through a different channel.
+				</p>
+			</div>
+		</section>
+
+		<section class="pipeline-section site-shell" id="pipeline">
+			<div class="section-heading">
+				<div>
+					<p class="section-kicker">Data lineage</p>
+					<h2>One pipeline, four distinct responsibilities.</h2>
+				</div>
+				<p>Heavy postcode–restaurant transformations stay in the cloud. The public site receives only compact, validated area-level artifacts.</p>
+			</div>
+			<PipelineFlow />
+		</section>
+
+		<section class="finding-section channel-section" id="findings">
+			<div class="site-shell">
+				<div class="editorial-intro">
+					<p class="section-kicker">Finding 01 · Channel geography</p>
+					<h2>Just Eat was observed beyond the matched direct channel in thousands of local markets.</h2>
+					<p>Direct delivery and marketplace delivery are not interchangeable. Comparing them on a shared geography shows where a retailer reaches an area through both channels, one channel or neither.</p>
+				</div>
+				<ChannelComparison />
+			</div>
+		</section>
+
+		<section class="finding-section exposure-section">
+			<div class="site-shell">
+				<div class="editorial-intro">
+					<p class="section-kicker">Finding 02 · Spatial inequality</p>
+					<h2>The geography of delivery depends on how exposure is measured.</h2>
+					<p>Counts describe breadth of choice; density standardises by population; share describes the composition of the available food market. No single measure can stand in for all three.</p>
+				</div>
+				<ExposureFindings />
+			</div>
+		</section>
+
+		<section class="methods-section site-shell" id="methods">
+			<div class="analysis-register">
+				<div>
+					<p class="section-kicker">Analysis register</p>
+					<h2>Methods stay attached to the evidence.</h2>
+				</div>
+				<div class="analysis-links">
+					{analysisModules.map((entry, index) => (
+						<a href={`${base}analysis/${entry.id}/`}>
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<div><strong>{entry.data.title}</strong><small>{entry.data.claimStatus} · {entry.data.geography}</small></div>
+							<i aria-hidden="true">↗</i>
+						</a>
+					))}
+				</div>
+			</div>
+
+			<div class="methods-grid">
+				<div>
+					<p class="section-kicker">Methods and boundaries</p>
+					<h2>Designed to show uncertainty, not erase it.</h2>
+				</div>
+				<div class="method-copy">
+					<p><strong>Representative-postcode design.</strong> Each LSOA or Scottish Data Zone is represented by one postcode near its population-weighted centroid. Results describe that sampled delivery market, not every household.</p>
+					<p><strong>Availability, not behaviour.</strong> A deliverable restaurant or retailer is not evidence of ordering, consumption or individual exposure.</p>
+					<p><strong>Associational analysis.</strong> Deprivation and health analyses are ecological and non-causal. Health estimates refer to 2024/25, while delivery exposure is a 2026 snapshot.</p>
+					<p><strong>Public release.</strong> Published artifacts contain area-level indicators only—no postcodes, restaurant-level links, credentials or raw response evidence.</p>
+				</div>
+			</div>
+			<div class="data-download">
+				<div>
+					<p class="method-label">Public data · release v1</p>
+					<p>Download the area-level retailer channel comparison used in Finding 01.</p>
+				</div>
+				<a href={`${base}data/v1/retailer_channel_areas.csv`} download>Download CSV <span aria-hidden="true">↓</span></a>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer site-shell">
+		<p>Digital Food Retail Environment</p>
+		<p>Python · SQL · spatial analysis · reproducible public data</p>
+	</footer>
+</BaseLayout>

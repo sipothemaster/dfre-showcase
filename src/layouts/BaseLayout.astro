@@ -1,0 +1,42 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	socialImage?: string;
+}
+
+const { title, description, socialImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const socialImageURL = socialImage
+	? new URL(`${base}${socialImage}`, Astro.site)
+	: null;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+		<link rel="canonical" href={canonicalURL} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		{socialImageURL && <meta property="og:image" content={socialImageURL} />}
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		{socialImageURL && <meta name="twitter:image" content={socialImageURL} />}
+		<title>{title}</title>
+	</head>
+	<body>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		<slot />
+	</body>
+</html>

@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+---
+
+<BaseLayout
+	title="Explore the data · DFRE"
+	description="Explore restaurant, fast-food and grocery delivery indicators across Great Britain."
+>
+	<main id="main-content" class="explorer-page" data-base={base}>
+		<header class="explorer-header">
+			<div>
+				<a class="wordmark" href={base}>DFRE / Interactive explorer</a>
+				<h1>Explore the delivery market</h1>
+			</div>
+			<p>Area-level indicators · Great Britain · representative-postcode design</p>
+		</header>
+
+		<div class="explorer-workspace">
+			<aside class="explorer-controls" aria-label="Map controls">
+				<div class="explorer-control-group">
+					<label for="map-metric">Map metric</label>
+					<select id="map-metric">
+						<option value="r">Deliverable restaurants</option>
+						<option value="ff">Fast-food restaurants</option>
+						<option value="ffs">Fast-food share</option>
+						<option value="g">Grocery listings</option>
+						<option value="co">Co-op channel</option>
+						<option value="mo">Morrisons fast channel</option>
+						<option value="sa">Sainsbury's fast channel</option>
+						<option value="ic">Iceland channel</option>
+					</select>
+				</div>
+
+				<div class="explorer-control-group">
+					<label for="lad-search">Find a local authority</label>
+					<select id="lad-search" disabled>
+						<option value="">Loading areas…</option>
+					</select>
+				</div>
+
+				<button id="clear-area" type="button" disabled>Return to Great Britain</button>
+
+				<div class="map-legend" id="map-legend" aria-live="polite"></div>
+
+				<p class="explorer-instruction">Select a local authority to load its LSOA or Data Zone polygons. Metric changes are applied in the browser.</p>
+			</aside>
+
+			<div class="map-frame">
+				<div id="map" aria-label="Interactive map of delivery availability"></div>
+				<div class="map-loading" id="map-loading" role="status">Loading map data…</div>
+			</div>
+
+			<aside class="area-profile" id="area-profile" aria-live="polite">
+				<p class="profile-kicker">Great Britain overview</p>
+				<h2>Select a local authority</h2>
+				<p>Click the map or use the area selector to load small-area detail and exact values.</p>
+				<div class="profile-method">
+					<strong>How to read this map</strong>
+					<p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA/Data Zone values or retailer channel states.</p>
+				</div>
+			</aside>
+		</div>
+	</main>
+
+	<script>
+		import '../scripts/explorer';
+	</script>
+</BaseLayout>

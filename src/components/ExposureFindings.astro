@@ -1,0 +1,49 @@
+---
+import data from '../data/generated/core_analysis_summary.json';
+
+const mostDeprived = data.deprivation_deciles.find((row) => row.imd_decile === 1)!;
+const leastDeprived = data.deprivation_deciles.find((row) => row.imd_decile === 10)!;
+const rural = data.rurality.find((row) => row.label === 'Rural')!;
+const urban = data.rurality.find((row) => row.label === 'Urban')!;
+const maxCount = Math.max(...data.deprivation_deciles.map((row) => row.count));
+---
+
+<div class="exposure-layout">
+	<figure class="decile-figure" aria-labelledby="decile-title">
+		<figcaption id="decile-title">
+			<span>Median deliverable fast-food restaurants</span>
+			<strong>By IMD 2025 decile</strong>
+		</figcaption>
+		<div class="decile-scale" aria-hidden="true"><span>More deprived</span><span>Less deprived</span></div>
+		<div class="decile-rows">
+			{data.deprivation_deciles.map((row) => (
+				<div class="decile-row">
+					<span class="decile-label">{row.imd_decile}</span>
+					<span class="decile-track">
+						<span class="decile-bar" style={`--bar-width: ${(row.count / maxCount) * 100}%`}></span>
+					</span>
+					<strong>{row.count}</strong>
+				</div>
+			))}
+		</div>
+		<p class="figure-note">Decile 1 is the most deprived tenth of English LSOAs; decile 10 is the least deprived.</p>
+	</figure>
+
+	<div class="finding-notes">
+		<article>
+			<p class="finding-number"><span>{mostDeprived.count}</span> vs <span>{leastDeprived.count}</span></p>
+			<h3>More choice in more deprived delivery markets</h3>
+			<p>The median count in the most deprived decile is nearly twice that in the least deprived decile. This is descriptive and partly reflects urban geography; adjusted models examine that structure separately.</p>
+		</article>
+		<article>
+			<p class="finding-number"><span>{rural.count}</span> vs <span>{urban.count}</span></p>
+			<h3>Rural and urban counts are far apart</h3>
+			<p>A typical rural LSOA has {rural.count} deliverable fast-food restaurants at its representative postcode, compared with {urban.count} in an urban LSOA.</p>
+		</article>
+		<article>
+			<p class="finding-number"><span>{Math.round(rural.share * 100)}%</span> vs <span>{Math.round(urban.share * 100)}%</span></p>
+			<h3>Composition tells a different story</h3>
+			<p>Median fast-food share is similar across the broad rural–urban split. Count, population-standardised density and share are therefore retained as complementary measures.</p>
+		</article>
+	</div>
+</div>

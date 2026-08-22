@@ -1,0 +1,39 @@
+---
+const steps = [
+	{
+		number: '01',
+		title: 'Collect',
+		body: 'Platform listings and retailer-specific availability checks at one representative postcode per small area.',
+		meta: '43,064 postcode markets',
+	},
+	{
+		number: '02',
+		title: 'Engineer',
+		body: 'Raw responses move through cloud storage, validation, deduplication and compact BigQuery tables.',
+		meta: '16.5m delivery relationships',
+	},
+	{
+		number: '03',
+		title: 'Measure',
+		body: 'Restaurant choice, fast-food exposure and grocery channels are joined to population and geography.',
+		meta: 'LSOA · Data Zone · MSOA',
+	},
+	{
+		number: '04',
+		title: 'Analyse',
+		body: 'Spatial and statistical analysis examines rurality, deprivation, demographic context and health.',
+		meta: 'Count · density · share',
+	},
+];
+---
+
+<div class="pipeline-flow" aria-label="DFRE data pipeline">
+	{steps.map((step) => (
+		<article class="pipeline-step">
+			<p class="pipeline-number">{step.number}</p>
+			<h3>{step.title}</h3>
+			<p>{step.body}</p>
+			<p class="pipeline-meta">{step.meta}</p>
+		</article>
+	))}
+</div>

@@ -1,0 +1,135 @@
+{
+  "title": "Digital fast-food exposure in England",
+  "claim_status": "descriptive",
+  "geography": "England LSOA 2021",
+  "areas": 33755,
+  "design": "One representative postcode per LSOA",
+  "exposure_period": "2026 delivery snapshot",
+  "population_period": "ONS mid-2024",
+  "deprivation_period": "English Indices of Deprivation 2025",
+  "definitions": {
+    "count": "Distinct deliverable fast-food restaurants",
+    "density_per_100000": "Count divided by resident population, multiplied by 100,000",
+    "share": "Fast-food restaurants divided by all deliverable food restaurants"
+  },
+  "overall": {
+    "count": {
+      "n": 33755,
+      "median": 96.0,
+      "p25": 38.0,
+      "p75": 193.0
+    },
+    "density_per_100000": {
+      "n": 33755,
+      "median": 5938.86,
+      "p25": 2291.22,
+      "p75": 11349.56
+    },
+    "share": {
+      "n": 33411,
+      "median": 0.5,
+      "p25": 0.47,
+      "p75": 0.54
+    }
+  },
+  "deprivation_deciles": [
+    {
+      "imd_decile": 1,
+      "label": "Decile 1",
+      "areas": 3375,
+      "count": 156.0,
+      "density_per_100000": 9084.97,
+      "share": 0.51
+    },
+    {
+      "imd_decile": 2,
+      "label": "Decile 2",
+      "areas": 3376,
+      "count": 155.0,
+      "density_per_100000": 8835.47,
+      "share": 0.51
+    },
+    {
+      "imd_decile": 3,
+      "label": "Decile 3",
+      "areas": 3375,
+      "count": 135.0,
+      "density_per_100000": 7786.48,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 4,
+      "label": "Decile 4",
+      "areas": 3376,
+      "count": 105.0,
+      "density_per_100000": 6390.68,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 5,
+      "label": "Decile 5",
+      "areas": 3375,
+      "count": 88.0,
+      "density_per_100000": 5203.86,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 6,
+      "label": "Decile 6",
+      "areas": 3376,
+      "count": 72.0,
+      "density_per_100000": 4268.44,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 7,
+      "label": "Decile 7",
+      "areas": 3375,
+      "count": 71.0,
+      "density_per_100000": 4112.04,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 8,
+      "label": "Decile 8",
+      "areas": 3376,
+      "count": 74.0,
+      "density_per_100000": 4318.97,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 9,
+      "label": "Decile 9",
+      "areas": 3375,
+      "count": 79.0,
+      "density_per_100000": 4735.6,
+      "share": 0.5
+    },
+    {
+      "imd_decile": 10,
+      "label": "Decile 10",
+      "areas": 3376,
+      "count": 82.0,
+      "density_per_100000": 5102.98,
+      "share": 0.49
+    }
+  ],
+  "rurality": [
+    {
+      "label": "Rural",
+      "areas": 5554,
+      "count": 9.0,
+      "density_per_100000": 528.12,
+      "share": 0.52
+    },
+    {
+      "label": "Urban",
+      "areas": 28201,
+      "count": 123.0,
+      "density_per_100000": 7365.89,
+      "share": 0.5
+    }
+  ],
+  "zero_food_denominator_areas": 344,
+  "interpretation": "Count, density and share measure different aspects of the delivery market. They are availability measures at a representative postcode, not physical-outlet density, ordering or individual consumption."
+}
