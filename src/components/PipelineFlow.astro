@@ -1,39 +1,214 @@
 ---
-const steps = [
+const dataModel = [
 	{
-		number: '01',
-		title: 'Collect',
-		body: 'Platform listings and retailer-specific availability checks at one representative postcode per small area.',
-		meta: '43,064 postcode markets',
+		family: 'Static coverage',
+		grain: 'Postcode × restaurant',
+		table: 'postcode_restaurant_delivery_map',
+		structure: 'delivery state · fee · minimum order · ETA · drive distance',
+		scale: '16,534,508 rows',
 	},
 	{
-		number: '02',
-		title: 'Engineer',
-		body: 'Raw responses move through cloud storage, validation, deduplication and compact BigQuery tables.',
-		meta: '16.5m delivery relationships',
+		family: 'Restaurant profile',
+		grain: 'Restaurant',
+		table: 'restaurant_profile',
+		structure: 'name · location · cuisine · rating · platform URL',
+		scale: '100,850 rows',
 	},
 	{
-		number: '03',
-		title: 'Measure',
-		body: 'Restaurant choice, fast-food exposure and grocery channels are joined to population and geography.',
-		meta: 'LSOA · Data Zone · MSOA',
+		family: 'Opening schedules',
+		grain: 'Restaurant × service × time',
+		table: 'restaurant_opening_times',
+		structure: 'local open/close time · timezone · cross-midnight flag',
+		scale: 'Normalised intervals',
 	},
 	{
-		number: '04',
-		title: 'Analyse',
-		body: 'Spatial and statistical analysis examines rurality, deprivation, demographic context and health.',
-		meta: 'Count · density · share',
+		family: 'Observed availability',
+		grain: 'Postcode × window × open restaurant',
+		table: 'restaurant_snapshots_temporal_snapshot_202606',
+		structure: 'planned/captured time · restaurant ID · live delivery attributes',
+		scale: '30,025,952 rows',
+	},
+	{
+		family: 'Direct grocery',
+		grain: 'Service × LSOA / Data Zone',
+		table: 'Standardised retailer availability',
+		structure: 'area code · Yes / No / Unknown · fast / scheduled delivery',
+		scale: '6 × 43,064 areas',
+	},
+	{
+		family: 'Spatial analysis',
+		grain: 'LSOA / Data Zone / MSOA',
+		table: 'area_delivery_coverage · delivery_analytics',
+		structure: 'count · density · share · population · deprivation · rurality',
+		scale: '43,064 / 6,856 areas',
 	},
 ];
 ---
 
-<div class="pipeline-flow" aria-label="DFRE data pipeline">
-	{steps.map((step) => (
-		<article class="pipeline-step">
-			<p class="pipeline-number">{step.number}</p>
-			<h3>{step.title}</h3>
-			<p>{step.body}</p>
-			<p class="pipeline-meta">{step.meta}</p>
-		</article>
-	))}
-</div>
+<figure class="data-architecture compact-architecture" aria-labelledby="data-architecture-title">
+	<figcaption id="data-architecture-title" class="visually-hidden">
+		Representative-postcode design, reusable cloud collection, storage and analytical data model
+	</figcaption>
+
+	<section class="architecture-band compact-workflow" aria-labelledby="workflow-title">
+		<header class="architecture-band-header">
+			<div>
+				<p class="architecture-kicker">Research architecture</p>
+				<h3 id="workflow-title">Spatial delivery data pipeline</h3>
+			</div>
+			<a class="repository-link" href="https://github.com/sipothemaster/delivery-availability-pipeline" target="_blank" rel="noreferrer">
+				delivery-availability-pipeline <span aria-hidden="true">↗</span>
+			</a>
+		</header>
+
+		<div class="research-flow">
+		<section class="research-stage geography-module" aria-labelledby="geography-module-title">
+			<header>
+				<p id="geography-module-title"><span>01</span> Representative-postcode design</p>
+			</header>
+			<div class="compact-route geography-route" aria-label="Representative postcode selection">
+				<span><strong>LSOA / Data Zone<br />population-weighted centroid</strong></span>
+				<b aria-hidden="true">→</b>
+				<span><strong>Nearest valid postcode<br />by centroid distance</strong></span>
+				<b aria-hidden="true">→</b>
+				<span><strong>Representative postcode<br />for all collection services</strong></span>
+			</div>
+		</section>
+
+		<div class="research-connector" aria-hidden="true"><b>↓</b><span>Postcode input</span></div>
+
+		<section class="research-stage discovery-module" aria-labelledby="discovery-module-title">
+			<header>
+				<p id="discovery-module-title"><span>02</span> API discovery and reusable collection</p>
+			</header>
+			<div class="compact-route discovery-route" aria-label="API reverse engineering workflow">
+				<span><strong>Capture Fetch/XHR<br />with Playwright</strong></span>
+				<b aria-hidden="true">→</b>
+				<span><strong>Validate the enriched<br /><code>/byslug/&#123;postcode&#125;</code> API</strong></span>
+				<b aria-hidden="true">→</b>
+				<span><strong>Build a parameterised<br />batch client</strong></span>
+			</div>
+		</section>
+
+		<div class="research-connector" aria-hidden="true"><b>↓</b><span>Deploy on GCP</span></div>
+
+		<section class="research-stage gcp-module" aria-labelledby="gcp-module-title">
+			<header>
+				<p id="gcp-module-title"><span>03</span> GCP execution</p>
+			</header>
+			<div class="gcp-pair">
+				<article>
+					<p>Cloud Tasks</p>
+					<strong>Postcode/window tasks with rate and concurrency controls</strong>
+				</article>
+				<article>
+					<p>Cloud Run</p>
+					<strong>Collection workers for API calls and response parsing</strong>
+				</article>
+			</div>
+		</section>
+
+		<div class="research-connector" aria-hidden="true"><b>↓</b><span>Produce datasets</span></div>
+
+		<section class="research-stage storage-module" aria-labelledby="storage-module-title">
+			<header>
+				<p id="storage-module-title"><span>04</span> Storage</p>
+			</header>
+			<div class="storage-pair">
+				<article>
+					<p>BigQuery</p>
+					<strong>Manifest, events, diagnostics and production tables</strong>
+				</article>
+				<article>
+					<p>Cloud Storage</p>
+					<strong>Compressed raw JSON responses</strong>
+				</article>
+			</div>
+		</section>
+		</div>
+
+		<section class="workflow-module relationship-module" aria-labelledby="relationship-module-title">
+			<header>
+				<p id="relationship-module-title">Platform data relationships</p>
+			</header>
+			<div class="relationship-map" aria-label="Representative postcodes branch into full and open-now restaurant coverage. Full coverage links to opening times; both coverage datasets link to restaurant profiles; open-now coverage is collected in four named windows.">
+				<div class="relationship-canvas">
+					<div class="relationship-boundary" aria-hidden="true">
+						<span class="relationship-zone-label relationship-zone-static">Opening-hours-derived availability</span>
+						<span class="relationship-zone-label relationship-zone-observed">Observed open-now availability</span>
+					</div>
+
+					<svg class="relationship-lines" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
+						<defs>
+							<marker id="relationship-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+								<path d="M0.75,0.75 L6,3.5 L0.75,6.25"></path>
+							</marker>
+						</defs>
+						<path d="M240 215 C278 215 260 85 300 85"></path>
+						<path d="M240 215 C278 215 260 250 300 250"></path>
+						<path d="M630 85 L690 85"></path>
+						<path d="M630 85 C670 85 645 250 690 250"></path>
+						<path d="M630 250 L690 250"></path>
+						<path d="M465 278 C465 300 465 306 465 322"></path>
+					</svg>
+
+					<article class="relationship-node relationship-postcode">
+						<strong>Representative postcodes</strong>
+					</article>
+					<article class="relationship-node relationship-full">
+						<strong>Full postcode–restaurant coverage</strong>
+						<code>postcode_restaurant_delivery_map</code>
+					</article>
+					<article class="relationship-node relationship-opening">
+						<strong>Restaurant opening times</strong>
+						<code>restaurant_opening_times</code>
+					</article>
+					<article class="relationship-node relationship-live">
+						<strong>Open-now postcode–restaurant coverage</strong>
+						<code>temporal_snapshot_202606</code>
+					</article>
+					<article class="relationship-node relationship-windows">
+						<strong>Four predefined windows</strong>
+						<ul>
+							<li>Weekday afternoon</li>
+							<li>Weekday evening</li>
+							<li>Weekday early hours</li>
+							<li>Saturday peak</li>
+						</ul>
+					</article>
+					<article class="relationship-node relationship-profile">
+						<strong>Restaurant profile</strong>
+						<code>restaurant_profile</code>
+					</article>
+				</div>
+			</div>
+		</section>
+	</section>
+
+	<div class="architecture-connector" aria-hidden="true"><span>validated analytical tables</span></div>
+
+	<section class="architecture-band model-band" aria-labelledby="model-title">
+		<header class="architecture-band-header">
+			<p class="architecture-kicker" id="model-title">Data structure</p>
+		</header>
+
+		<div class="data-model-table" role="table" aria-label="Core analytical data structure">
+			<div class="data-model-row data-model-head" role="row">
+				<span role="columnheader">Dataset</span>
+				<span role="columnheader">Grain</span>
+				<span role="columnheader">Table / object</span>
+				<span role="columnheader">Core structure</span>
+				<span role="columnheader">Scale</span>
+			</div>
+			{dataModel.map((row) => (
+				<div class="data-model-row" role="row">
+					<strong role="cell">{row.family}</strong>
+					<span role="cell">{row.grain}</span>
+					<span role="cell"><code>{row.table}</code></span>
+					<span role="cell">{row.structure}</span>
+					<span role="cell">{row.scale}</span>
+				</div>
+			))}
+		</div>
+	</section>
+</figure>
