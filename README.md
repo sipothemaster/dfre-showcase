@@ -1,14 +1,15 @@
 # Britain's Digital Food Environment
 
-An editorial case study and browser-based WebGIS for a national spatial-data project. The site connects four source projects into one public narrative: data collection, cloud processing, statistical analysis, and interactive communication.
+A professional project report and browser-based WebGIS for a national spatial-data study of restaurant and grocery delivery availability across Great Britain. The site presents the full research chain: representative-postcode design, cloud data collection, spatial integration, analysis, and public communication.
 
 Production URL: `https://sipothemaster.github.io/dfre-showcase/`
 
 ## What the public site contains
 
-- A concise account of the data-engineering pipeline and its scale.
+- A compact research architecture covering sampling, API discovery, cloud execution, storage, and production datasets.
+- A data-relationship model separating opening-hours-derived availability from observed open-now availability.
 - Direct-retailer versus Just Eat channel comparisons for matched grocery services.
-- Descriptive findings on deprivation, rurality, and alternative exposure definitions.
+- Spatial findings on deprivation, rurality, and alternative exposure definitions.
 - A MapLibre explorer covering 43,064 LSOAs and Scottish Data Zones.
 - Versioned, area-level downloads with no postcodes, restaurant-level records, raw responses, or credentials.
 
@@ -17,20 +18,48 @@ The former Dash application is not embedded or linked. It remains an internal re
 ## Architecture
 
 ```text
-source collection + GCP pipeline
-             |
-             v
-validated analytical exports (Python / SQL)
-             |
-             v
-public area-level release (CSV / JSON / GeoJSON)
-             |
-             v
-Astro editorial pages + MapLibre browser explorer
-             |
-             v
-GitHub Pages (no application server)
+LSOA / Data Zone population-weighted centroid
+                    |
+                    v
+          nearest valid postcode
+                    |
+                    v
+browser network observation -> enriched listing API -> reusable batch client
+                    |
+                    v
+       Cloud Tasks          Cloud Run
+       orchestration        collection workers
+                    |
+                    v
+     BigQuery production tables + GCS raw JSON
+                    |
+                    v
+      Python / SQL spatial integration and analysis
+                    |
+                    v
+       Astro report + MapLibre browser explorer
+                    |
+                    v
+          GitHub Pages (no application server)
 ```
+
+The platform pipeline uses 43,062 unique representative postcodes for 43,064 small areas. Playwright was used to inspect Fetch/XHR responses and identify the enriched postcode listing endpoint. A parameterised Python client was then deployed through Cloud Tasks and Cloud Run, with run manifests, events, diagnostics, and production tables stored in BigQuery and compressed complete responses retained in Cloud Storage.
+
+The production data separates two temporal concepts:
+
+- **Opening-hours-derived availability:** full postcode–restaurant coverage joined to restaurant opening schedules. This represents availability inferred from stated hours, not verified live status.
+- **Observed open-now availability:** restaurants observed as open for delivery during four predefined collection windows: weekday afternoon, weekday evening, weekday early hours, and Saturday peak.
+
+## Core data scale
+
+| Dataset | Grain | Production scale |
+| --- | --- | ---: |
+| Static coverage | Postcode × restaurant | 16,534,508 rows |
+| Restaurant profile | Restaurant | 100,850 rows |
+| Opening schedules | Restaurant × service × time | Normalised intervals |
+| Observed availability | Postcode × window × open restaurant | 30,025,952 rows |
+| Direct grocery | Service × LSOA / Data Zone | 6 × 43,064 areas |
+| Spatial analysis | LSOA / Data Zone / MSOA | 43,064 / 6,856 areas |
 
 The explorer uses progressive geography loading. A simplified 350-feature LAD overview is loaded first; one of 350 child GeoJSON files is fetched only after a local authority is selected. Metric switching, classification, lookup, and profile rendering happen in the browser, so there are no Dash callbacks or Python requests at runtime.
 
