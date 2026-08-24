@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PipelineFlow from '../components/PipelineFlow.astro';
-import ChannelComparison from '../components/ChannelComparison.astro';
+import AnalysisFramework from '../components/AnalysisFramework.astro';
+import ChannelCoverageMaps from '../components/ChannelCoverageMaps.astro';
+import ChannelPatchAnalysis from '../components/ChannelPatchAnalysis.astro';
 import ExposureFindings from '../components/ExposureFindings.astro';
-import { getCollection } from 'astro:content';
 
 const facts = [
 	{ value: '43k', label: 'LSOAs / Data Zones' },
@@ -13,8 +14,6 @@ const facts = [
 	{ value: '6', label: 'major grocery services' },
 ];
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
-const analysisModules = (await getCollection('analyses', ({ data }) => data.status === 'published'))
-	.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout
@@ -29,7 +28,6 @@ const analysisModules = (await getCollection('analyses', ({ data }) => data.stat
 			<a href="#pipeline">Pipeline</a>
 			<a href="#findings">Findings</a>
 			<a href={`${base}explore/`}>Explore</a>
-			<a href="#methods">Methods</a>
 		</nav>
 	</header>
 
@@ -68,7 +66,7 @@ const analysisModules = (await getCollection('analyses', ({ data }) => data.stat
 				<p class="section-kicker">The project</p>
 				<h2>Measuring how restaurant and grocery delivery availability varies across place.</h2>
 				<p>
-					The project integrates listings from a major delivery platform, standardised availability data from six major grocery services, and public demographic datasets to measure restaurant and grocery delivery availability across Great Britain. These sources are aligned within a common spatial framework across LSOAs, Data Zones and MSOAs, enabling geographic analysis of coverage and comparison between direct retailer and marketplace delivery channels.
+					The project integrates listings from a major digital delivery platform, standardised availability data from six major grocery services, and public demographic datasets to measure restaurant and grocery delivery availability across Great Britain. These sources are aligned within a common spatial framework across LSOAs, Data Zones and MSOAs, enabling geographic analysis of coverage and comparison between retailer-owned services and digital delivery platforms.
 				</p>
 			</div>
 		</section>
@@ -77,69 +75,37 @@ const analysisModules = (await getCollection('analyses', ({ data }) => data.stat
 			<PipelineFlow />
 		</section>
 
+		<section class="analysis-framework-section site-shell" aria-label="Analysis overview">
+			<AnalysisFramework />
+		</section>
+
 		<section class="finding-section channel-section" id="findings">
 			<div class="site-shell">
 				<div class="editorial-intro">
-					<p class="section-kicker">Finding 01 · Channel geography</p>
-					<h2>Just Eat was observed beyond the matched direct channel in thousands of local markets.</h2>
-					<p>Direct delivery and marketplace delivery are not interchangeable. Comparing them on a shared geography shows where a retailer reaches an area through both channels, one channel or neither.</p>
+					<p class="section-kicker">Finding 01 · Retail network extension</p>
+					<h2>Digital delivery platforms form an additional layer of local food retail reach.</h2>
+					<p>Using Just Eat as the observed platform, the analysis compares retailer listings with matched retailer-owned services on a common small-area geography. It identifies where the two networks overlap and where the platform provides additional observed reach.</p>
 				</div>
-				<ChannelComparison />
+				<ChannelCoverageMaps />
+				<ChannelPatchAnalysis />
 			</div>
 		</section>
 
 		<section class="finding-section exposure-section">
 			<div class="site-shell">
 				<div class="editorial-intro">
-					<p class="section-kicker">Finding 02 · Spatial inequality</p>
-					<h2>The geography of delivery depends on how exposure is measured.</h2>
-					<p>Counts describe breadth of choice; density standardises by population; share describes the composition of the available food market. No single measure can stand in for all three.</p>
+					<p class="section-kicker">Finding 02 · Inequality in available food choice</p>
+					<h2>More deprived areas have greater digital fast-food exposure, while rural markets have far fewer available options.</h2>
+					<p>Count, population-standardised density and fast-food share capture different dimensions of exposure. Adjusted estimates remain higher at greater deprivation across all three measures, while the rural–urban contrast is strongest for the breadth of available restaurants. These are area-level associations, not evidence of platform targeting or consumption.</p>
 				</div>
 				<ExposureFindings />
 			</div>
 		</section>
 
-		<section class="methods-section site-shell" id="methods">
-			<div class="analysis-register">
-				<div>
-					<p class="section-kicker">Analysis register</p>
-					<h2>Methods stay attached to the evidence.</h2>
-				</div>
-				<div class="analysis-links">
-					{analysisModules.map((entry, index) => (
-						<a href={`${base}analysis/${entry.id}/`}>
-							<span>{String(index + 1).padStart(2, '0')}</span>
-							<div><strong>{entry.data.title}</strong><small>{entry.data.claimStatus} · {entry.data.geography}</small></div>
-							<i aria-hidden="true">↗</i>
-						</a>
-					))}
-				</div>
-			</div>
-
-			<div class="methods-grid">
-				<div>
-					<p class="section-kicker">Methods and boundaries</p>
-					<h2>Designed to show uncertainty, not erase it.</h2>
-				</div>
-				<div class="method-copy">
-					<p><strong>Representative-postcode design.</strong> Each LSOA or Scottish Data Zone is represented by one postcode near its population-weighted centroid. Results describe that sampled delivery market, not every household.</p>
-					<p><strong>Availability, not behaviour.</strong> A deliverable restaurant or retailer is not evidence of ordering, consumption or individual exposure.</p>
-					<p><strong>Associational analysis.</strong> Deprivation and health analyses are ecological and non-causal. Health estimates refer to 2024/25, while delivery exposure is a 2026 snapshot.</p>
-					<p><strong>Public release.</strong> Published artifacts contain area-level indicators only—no postcodes, restaurant-level links, credentials or raw response evidence.</p>
-				</div>
-			</div>
-			<div class="data-download">
-				<div>
-					<p class="method-label">Public data · release v1</p>
-					<p>Download the area-level retailer channel comparison used in Finding 01.</p>
-				</div>
-				<a href={`${base}data/v1/retailer_channel_areas.csv`} download>Download CSV <span aria-hidden="true">↓</span></a>
-			</div>
-		</section>
 	</main>
 
 	<footer class="site-footer site-shell">
 		<p>Digital Food Retail Environment</p>
-		<p>Python · SQL · spatial analysis · reproducible public data</p>
+		<p>Python · SQL · spatial analysis · reproducible research</p>
 	</footer>
 </BaseLayout>

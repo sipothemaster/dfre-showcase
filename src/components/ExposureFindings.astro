@@ -1,49 +1,65 @@
 ---
 import data from '../data/generated/core_analysis_summary.json';
 
-const mostDeprived = data.deprivation_deciles.find((row) => row.imd_decile === 1)!;
-const leastDeprived = data.deprivation_deciles.find((row) => row.imd_decile === 10)!;
-const rural = data.rurality.find((row) => row.label === 'Rural')!;
-const urban = data.rurality.find((row) => row.label === 'Urban')!;
-const maxCount = Math.max(...data.deprivation_deciles.map((row) => row.count));
+const base = import.meta.env.BASE_URL;
+const model = data.adjusted_model;
+const regressionFigure = `${base.replace(/\/$/, '')}/images/analysis/02_adjusted_imd_score_predictions.png`;
 ---
 
-<div class="exposure-layout">
-	<figure class="decile-figure" aria-labelledby="decile-title">
-		<figcaption id="decile-title">
-			<span>Median deliverable fast-food restaurants</span>
-			<strong>By IMD 2025 decile</strong>
-		</figcaption>
-		<div class="decile-scale" aria-hidden="true"><span>More deprived</span><span>Less deprived</span></div>
-		<div class="decile-rows">
-			{data.deprivation_deciles.map((row) => (
-				<div class="decile-row">
-					<span class="decile-label">{row.imd_decile}</span>
-					<span class="decile-track">
-						<span class="decile-bar" style={`--bar-width: ${(row.count / maxCount) * 100}%`}></span>
-					</span>
-					<strong>{row.count}</strong>
-				</div>
+<section class="exposure-model" aria-labelledby="exposure-model-title">
+	<header class="exposure-model-heading">
+		<div>
+			<p class="method-label">Adjusted regression</p>
+			<h3 id="exposure-model-title">A common adjustment structure is applied to three exposure measures.</h3>
+		</div>
+		<p>Continuous IMD score is modelled non-linearly. Rural–urban class, population density and region are held in the same specification for count, density and share.</p>
+	</header>
+
+	<div class="regression-specification">
+		<div
+			class="regression-equation"
+			role="math"
+			aria-label="Outcome-specific link of expected exposure equals an intercept, a spline of IMD score, rural urban class, log population density and region"
+		>
+			<span><i>g</i><sub>k</sub>(E[<i>Y</i><sub>ik</sub> | <i>X</i><sub>i</sub>])</span>
+			<b>=</b>
+			<span><i>β</i><sub>0k</sub> + <i>s</i><sub>k</sub>(IMD<sub>i</sub>) + <i>γ</i><sub>k</sub>RUC<sub>i</sub> + <i>β</i><sub>1k</sub>log(1 + population density<sub>i</sub>) + <i>δ</i><sub>k</sub>region<sub>i</sub></span>
+		</div>
+		<div class="regression-equation-note">
+			<p><i>i</i> indexes England LSOAs and <i>k</i> indexes the three exposure outcomes. <i>s</i><sub>k</sub>(IMD) is a restricted cubic spline with four degrees of freedom; RUC 2021 and region enter as categorical terms, and population density is log-transformed.</p>
+			<p>The outcome-specific link <i>g</i><sub>k</sub> is log for the negative-binomial count model, identity for OLS on log(1 + density), and logit for the fractional-share model.</p>
+		</div>
+
+		<div class="regression-model-grid">
+			{model.models.map((entry) => (
+				<article>
+					<strong>{entry.outcome}</strong>
+					<span>{entry.family}</span>
+					<small>{entry.link} link · n = {entry.n.toLocaleString('en-GB')}</small>
+				</article>
 			))}
 		</div>
-		<p class="figure-note">Decile 1 is the most deprived tenth of English LSOAs; decile 10 is the least deprived.</p>
-	</figure>
 
-	<div class="finding-notes">
-		<article>
-			<p class="finding-number"><span>{mostDeprived.count}</span> vs <span>{leastDeprived.count}</span></p>
-			<h3>More choice in more deprived delivery markets</h3>
-			<p>The median count in the most deprived decile is nearly twice that in the least deprived decile. This is descriptive and partly reflects urban geography; adjusted models examine that structure separately.</p>
-		</article>
-		<article>
-			<p class="finding-number"><span>{rural.count}</span> vs <span>{urban.count}</span></p>
-			<h3>Rural and urban counts are far apart</h3>
-			<p>A typical rural LSOA has {rural.count} deliverable fast-food restaurants at its representative postcode, compared with {urban.count} in an urban LSOA.</p>
-		</article>
-		<article>
-			<p class="finding-number"><span>{Math.round(rural.share * 100)}%</span> vs <span>{Math.round(urban.share * 100)}%</span></p>
-			<h3>Composition tells a different story</h3>
-			<p>Median fast-food share is similar across the broad rural–urban split. Count, population-standardised density and share are therefore retained as complementary measures.</p>
-		</article>
+		<p class="regression-meta">{model.covariance} covariance · {(model.confidence_level * 100).toFixed(0)}% confidence intervals · predictions across the {model.imd_range}</p>
 	</div>
-</div>
+
+	<figure class="regression-figure" aria-labelledby="regression-figure-title">
+		<div class="regression-figure-heading">
+			<div>
+				<p class="method-label">Conditional association</p>
+				<h3 id="regression-figure-title">Adjusted fast-food exposure across the continuous IMD score</h3>
+			</div>
+			<p>Higher IMD scores indicate greater deprivation. Predictions hold RUC at {model.reference_profile.ruc21nm}, region at {model.reference_profile.region22nm}, and population density at the {model.reference_profile.population_density.toLowerCase()}.</p>
+		</div>
+
+		<div class="regression-image-frame">
+			<img
+				src={regressionFigure}
+				alt="Three adjusted regression curves for fast-food restaurant count, population-standardised density and fast-food share across the continuous IMD score. Each curve includes a shaded 95% confidence interval."
+				loading="lazy"
+			/>
+		</div>
+
+		<figcaption>Lines are model-predicted values; shaded ribbons are robust 95% confidence intervals. The curves describe conditional area-level associations and do not identify platform targeting, ordering or consumption.</figcaption>
+	</figure>
+</section>

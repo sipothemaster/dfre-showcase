@@ -1,0 +1,99 @@
+---
+import englandSummary from '../data/generated/retailer_channel_summary_england.json';
+
+const base = import.meta.env.BASE_URL;
+const maps = [
+	{
+		comparison: 'coop',
+		label: 'Co-op',
+		file: 'coop.png',
+		directService: 'Co-op direct delivery',
+		justeatService: 'Co-op on Just Eat',
+		alt: 'Small-area map of Co-op direct and Just Eat delivery-channel coverage across England.',
+	},
+	{
+		comparison: 'sainsburys_fast',
+		label: "Sainsbury's fast",
+		file: 'sainsburys-fast.png',
+		directService: "Sainsbury's Chop Chop",
+		justeatService: "Sainsbury's on Just Eat",
+		alt: "Small-area map of Sainsbury's Chop Chop and Just Eat delivery-channel coverage across England.",
+	},
+	{
+		comparison: 'morrisons_fast',
+		label: 'Morrisons fast',
+		file: 'morrisons-fast.png',
+		directService: 'Morrisons FastDelivery',
+		justeatService: 'Morrisons on Just Eat',
+		alt: 'Small-area map of Morrisons FastDelivery and Just Eat delivery-channel coverage across England.',
+	},
+];
+
+const comparisonById = Object.fromEntries(
+	englandSummary.comparisons.map((comparison) => [comparison.comparison, comparison]),
+);
+
+const categoryClasses: Record<string, string> = {
+	'Both channels': 'both',
+	'Direct only': 'direct',
+	'Just Eat only': 'platform',
+	'Neither observed': 'neither',
+};
+
+const legend = [
+	['Both channels', 'both'],
+	['Direct only', 'direct'],
+	['Just Eat only', 'platform'],
+	['Neither observed', 'neither'],
+];
+---
+
+<figure class="channel-map-figure" aria-labelledby="channel-map-title">
+	<div class="channel-map-heading">
+		<h3 id="channel-map-title">Retail network coverage across England</h3>
+		<p>Retailer-owned delivery compared with the same retailer observed through Just Eat.</p>
+	</div>
+
+	<div class="channel-legend channel-map-legend" aria-label="Map categories">
+		{legend.map(([label, className]) => (
+			<span><i class={`legend-swatch ${className}`}></i>{label}</span>
+		))}
+	</div>
+
+	<div class="channel-map-grid">
+		{maps.map((map) => {
+			const comparison = comparisonById[map.comparison];
+			const visibleCategories = comparison.categories.filter(
+				(item) => item.category !== 'Direct unresolved',
+			);
+			const platform = visibleCategories.find((item) => item.category === 'Just Eat only');
+			const aria = visibleCategories
+				.map((item) => `${item.category}: ${item.percent}%`)
+				.join(', ');
+
+			return (
+				<section>
+					<div class="channel-map-summary">
+						<h4>{map.label}</h4>
+						<p class="channel-map-service">{map.directService} compared with {map.justeatService}</p>
+						<p class="channel-map-value"><strong>{platform?.percent}%</strong> Just Eat only</p>
+						<div class="channel-bar" role="img" aria-label={`${map.label}, England. ${aria}`}>
+							{visibleCategories.map((item) => item.percent > 0 && (
+								<span
+									class={`channel-segment ${categoryClasses[item.category]}`}
+									style={`--segment-width: ${item.percent}%`}
+									title={`${item.category}: ${item.percent}%`}
+								></span>
+							))}
+						</div>
+					</div>
+					<img src={`${base}images/channel-coverage/${map.file}`} alt={map.alt} loading="lazy" />
+				</section>
+			);
+		})}
+	</div>
+
+	<figcaption>
+		England LSOA 2021 markets. Internal small-area boundaries are suppressed for national legibility; only resolved retailer-owned delivery states are classified.
+	</figcaption>
+</figure>

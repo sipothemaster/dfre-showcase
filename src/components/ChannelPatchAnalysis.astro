@@ -1,0 +1,214 @@
+---
+import patchAnalysis from '../data/generated/grocery_patch_analysis.json';
+
+const base = import.meta.env.BASE_URL;
+const retailerColours: Record<string, string> = {
+	coop: '#4f8577',
+	sainsburys: '#446e9b',
+	morrisons: '#b6412f',
+};
+const mapFiles: Record<string, string> = {
+	coop: 'coop.png',
+	sainsburys: 'sainsburys-fast.png',
+	morrisons: 'morrisons-fast.png',
+};
+const morphologyClasses: Record<string, string> = {
+	'Fill-in': 'fill-in',
+	'Edge expansion': 'edge-complement',
+	'Independent island': 'island',
+};
+const morphologyLegend = [
+	['Fill-in', 'fill-in'],
+	['Edge-adjacent complement', 'edge-complement'],
+	['Independent island', 'island'],
+	['Retailer-owned coverage', 'direct-context'],
+	['Other areas', 'other-context'],
+];
+
+const chart = {
+	width: 1100,
+	height: 380,
+	left: 70,
+	right: 24,
+	top: 24,
+	bottom: 58,
+};
+const xMin = 0;
+const xMax = Math.log10(5000);
+const yMax = 0.85;
+const plotWidth = chart.width - chart.left - chart.right;
+const plotHeight = chart.height - chart.top - chart.bottom;
+const xScale = (logX: number) => chart.left + ((logX - xMin) / (xMax - xMin)) * plotWidth;
+const yScale = (value: number) => chart.top + plotHeight - (value / yMax) * plotHeight;
+const xTicks = [1, 10, 100, 1000, 5000];
+const yTicks = [0, 0.4, 0.8];
+const densitySeries = patchAnalysis.retailers.map((retailer) => ({
+	...retailer,
+	colour: retailerColours[retailer.retailer],
+	path: retailer.density
+		.map((point, index) => `${index === 0 ? 'M' : 'L'} ${xScale(point.logX).toFixed(2)} ${yScale(point.y).toFixed(2)}`)
+		.join(' '),
+}));
+---
+
+<section class="patch-analysis" aria-labelledby="patch-analysis-title">
+	<header class="patch-analysis-heading">
+		<p class="section-kicker">Spatial structure of network extension</p>
+		<h3 id="patch-analysis-title">How additional Just Eat coverage is organised in space</h3>
+	</header>
+
+	<figure class="patch-density-figure" aria-labelledby="patch-density-title">
+		<div class="patch-module-heading">
+			<div>
+				<p class="method-label">Patch-size distribution</p>
+				<h4 id="patch-density-title">Most connected patches are small.</h4>
+			</div>
+			<p>A patch is one or more Just Eat-only LSOAs connected by a shared boundary greater than 1 m. The x-axis uses a log10 scale: 1 LSOA is the smallest possible patch and the first valid value because log10(1) = 0, while log10(0) is undefined.</p>
+		</div>
+
+		<div class="density-legend" aria-label="Retailers">
+			{densitySeries.map((retailer) => (
+				<span><i style={`--density-colour: ${retailer.colour}`}></i>{retailer.label}</span>
+			))}
+		</div>
+
+		<svg class="patch-density-chart" viewBox={`0 0 ${chart.width} ${chart.height}`} role="img" aria-label="Smoothed distribution of LSOAs per Just Eat-only patch for Co-op, Sainsbury's fast and Morrisons fast">
+			{yTicks.map((tick) => (
+				<g>
+					<line class="density-gridline" x1={chart.left} x2={chart.width - chart.right} y1={yScale(tick)} y2={yScale(tick)} />
+					<text class="density-axis-label" x={chart.left - 12} y={yScale(tick) + 4} text-anchor="end">{tick.toFixed(1)}</text>
+				</g>
+			))}
+			{xTicks.map((tick) => (
+				<g>
+					<line class="density-gridline density-gridline-vertical" x1={xScale(Math.log10(tick))} x2={xScale(Math.log10(tick))} y1={chart.top} y2={chart.top + plotHeight} />
+					<text class="density-axis-label" x={xScale(Math.log10(tick))} y={chart.height - 28} text-anchor="middle">{tick.toLocaleString('en-GB')}</text>
+				</g>
+			))}
+			<line class="density-axis" x1={chart.left} x2={chart.width - chart.right} y1={chart.top + plotHeight} y2={chart.top + plotHeight} />
+			{densitySeries.map((retailer) => (
+				<path class="density-line" d={retailer.path} style={`--density-colour: ${retailer.colour}`} />
+			))}
+			<text class="density-axis-title" x={chart.left + plotWidth / 2} y={chart.height - 5} text-anchor="middle">LSOAs per connected patch (log scale)</text>
+			<text class="density-axis-title" x="15" y={chart.top + plotHeight / 2} text-anchor="middle" transform={`rotate(-90 15 ${chart.top + plotHeight / 2})`}>Smoothed density</text>
+		</svg>
+
+		<div class="patch-density-summary">
+			{patchAnalysis.retailers.map((retailer) => (
+				<article>
+					<h5>{retailer.label}</h5>
+					<strong>{retailer.atMostTenPct.toFixed(2)}%</strong>
+					<p>of patches contain 10 LSOAs or fewer</p>
+					<span>Median {retailer.medianLsoas} · maximum {retailer.maxLsoas.toLocaleString('en-GB')} LSOAs</span>
+				</article>
+			))}
+		</div>
+
+		<figcaption>
+			Curves are Gaussian KDEs of log10-transformed LSOA count using all retailer-specific patches. They describe the observed distribution and are not evidence of latent clusters. The long right tail includes a 2,203-LSOA Morrisons patch.
+		</figcaption>
+	</figure>
+
+	<section class="morphology-rule" aria-labelledby="patch-morphology-title">
+		<header>
+			<p class="method-label">Morphology rule</p>
+			<h4 id="patch-morphology-title">Spatial relationship between Just Eat-only patches and retailer-owned delivery</h4>
+		</header>
+
+		<div class="morphology-schematic-grid">
+			<article>
+				<h5>Fill-in</h5>
+				<svg viewBox="0 0 280 150" role="img" aria-label="A Just Eat-only patch enclosed by retailer-owned delivery coverage">
+					<path class="schematic-direct" fill-rule="evenodd" d="M22 72 38 31 83 16 120 30 151 15 206 28 248 61 254 102 218 130 164 136 123 126 84 140 42 119 19 92 22 72Zm83-21 29-13 32 9 16 28-12 30-37 10-31-20-6-24 9-20Z" />
+					<path class="schematic-platform" d="m105 51 29-13 32 9 16 28-12 30-37 10-31-20-6-24 9-20Z" />
+				</svg>
+				<p>Direct contact · E ≥ 50%</p>
+			</article>
+
+			<article>
+				<h5>Edge-adjacent complement</h5>
+				<svg viewBox="0 0 280 150" role="img" aria-label="A Just Eat-only patch adjoining the edge of retailer-owned delivery coverage">
+					<path class="schematic-direct" d="M20 75 35 34 78 18 119 31 153 17 196 33 213 67 199 108 163 132 112 126 76 139 37 114 18 94 20 75Z" />
+					<path class="schematic-platform" d="m200 67 24-18 30 8 13 25-10 31-31 10-28-15-9-22 11-19Z" />
+				</svg>
+				<p>Direct contact · E &lt; 50%</p>
+			</article>
+
+			<article>
+				<h5>Independent island</h5>
+				<svg viewBox="0 0 280 150" role="img" aria-label="A Just Eat-only patch separated from retailer-owned delivery coverage">
+					<path class="schematic-direct" d="M17 74 31 35 68 19 105 31 138 18 174 34 190 66 180 105 146 131 103 125 70 139 34 115 16 94 17 74Z" />
+					<path class="schematic-platform" d="m224 56 27 6 14 25-9 29-28 12-25-16-6-27 10-20 17-9Z" />
+				</svg>
+				<p>No retailer-owned Rook contact</p>
+			</article>
+		</div>
+
+		<div class="morphology-formula">
+			<span>Rook-connected LSOAs; shared boundary &gt; 1 m.</span>
+			<span
+				class="fraction-equation"
+				role="math"
+				aria-label="E equals direct shared-boundary length divided by direct plus neither plus England exterior boundary length"
+			>
+				<i>E</i><b>=</b>
+				<span class="equation-fraction">
+					<span><i>L</i><sub>direct</sub></span>
+					<span><i>L</i><sub>direct</sub> + <i>L</i><sub>neither</sub> + <i>L</i><sub>England exterior</sub></span>
+				</span>
+			</span>
+			<span>Unknown-direct boundary excluded.</span>
+		</div>
+	</section>
+
+	<figure class="morphology-map-figure" aria-labelledby="patch-composition-title">
+		<div class="patch-module-heading">
+			<div>
+				<p class="method-label">Observed pattern</p>
+				<h4 id="patch-composition-title">Most Just Eat-only patches fill gaps in or extend beyond retailer-owned delivery networks; few form independent markets.</h4>
+			</div>
+			<p>50% boundary-length enclosure rule. Composition is a share of connected patches.</p>
+		</div>
+
+		<div class="morphology-legend" aria-label="Patch morphology and map context">
+			{morphologyLegend.map(([label, className]) => (
+				<span><i class={`morphology-swatch ${className}`}></i>{label}</span>
+			))}
+		</div>
+
+		<div class="morphology-map-grid">
+			{patchAnalysis.retailers.map((retailer) => {
+				const aria = retailer.morphology
+					.map((item) => `${item.label}: ${item.patchSharePct}%`)
+					.join(', ');
+				return (
+					<section>
+						<div class="morphology-map-summary">
+							<h5>{retailer.label}</h5>
+							<p>{retailer.patches} connected patches</p>
+							<div class="morphology-result-bar" role="img" aria-label={`${retailer.label}. ${aria}`}>
+								{retailer.morphology.map((item) => (
+									<span
+										class={morphologyClasses[item.sourceLabel]}
+										style={`--morphology-width: ${item.patchSharePct}%`}
+										title={`${item.label}: ${item.patches} patches (${item.patchSharePct}%)`}
+									>
+										{item.patchSharePct >= 12 && `${item.patchSharePct.toFixed(2)}%`}
+									</span>
+								))}
+							</div>
+						</div>
+						<img
+							src={`${base}images/patch-morphology/${mapFiles[retailer.retailer]}`}
+							alt={`${retailer.label} Just Eat-only connected patches classified by morphology across England.`}
+						/>
+					</section>
+				);
+			})}
+		</div>
+
+		<figcaption>
+			“Edge expansion” is the analytical source category; the report uses <strong>edge-adjacent complement</strong>. A single snapshot cannot distinguish service expansion from a digital delivery platform supplementing areas not reached by retailer-owned delivery.
+		</figcaption>
+	</figure>
+</section>
