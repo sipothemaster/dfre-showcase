@@ -130,6 +130,39 @@
       "share": 0.5
     }
   ],
+  "adjusted_model": {
+    "equation": "g_k(E[Y_ik | X_i]) = beta_0k + s_k(IMD score_i) + RUC_i + beta_1k log(1 + population density_i) + region_i",
+    "imd_term": "Restricted cubic spline",
+    "imd_spline_degrees_of_freedom": 4,
+    "models": [
+      {
+        "outcome": "Count",
+        "family": "Negative binomial",
+        "link": "Log",
+        "n": 33755
+      },
+      {
+        "outcome": "Density per 100,000",
+        "family": "OLS on log(1 + density)",
+        "link": "Identity",
+        "n": 33755
+      },
+      {
+        "outcome": "Share",
+        "family": "Fractional logit",
+        "link": "Logit",
+        "n": 33411
+      }
+    ],
+    "covariance": "HC3 robust",
+    "confidence_level": 0.95,
+    "imd_range": "1st to 99th percentile of the continuous IMD 2025 score",
+    "reference_profile": {
+      "ruc21nm": "Urban: Nearer to a major town or city",
+      "region22nm": "South East",
+      "population_density": "National LSOA median on the log scale"
+    }
+  },
   "zero_food_denominator_areas": 344,
   "interpretation": "Count, density and share measure different aspects of the delivery market. They are availability measures at a representative postcode, not physical-outlet density, ordering or individual consumption."
 }

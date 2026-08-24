@@ -27,11 +27,36 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<option value="ff">Fast-food restaurants</option>
 						<option value="ffs">Fast-food share</option>
 						<option value="g">Grocery listings</option>
+						<option value="open">Scheduled open restaurants</option>
 						<option value="co">Co-op channel</option>
 						<option value="mo">Morrisons fast channel</option>
 						<option value="sa">Sainsbury's fast channel</option>
 						<option value="ic">Iceland channel</option>
 					</select>
+				</div>
+
+				<div class="temporal-controls" id="temporal-controls" hidden>
+					<div class="explorer-control-group">
+						<label for="temporal-day">Day</label>
+						<select id="temporal-day">
+							<option value="Monday">Monday</option>
+							<option value="Tuesday">Tuesday</option>
+							<option value="Wednesday">Wednesday</option>
+							<option value="Thursday">Thursday</option>
+							<option value="Friday" selected>Friday</option>
+							<option value="Saturday">Saturday</option>
+							<option value="Sunday">Sunday</option>
+						</select>
+					</div>
+
+					<div class="explorer-control-group temporal-hour-control">
+						<div class="temporal-hour-label">
+							<label for="temporal-hour">Hour</label>
+							<output id="temporal-hour-output" for="temporal-hour">20:00</output>
+						</div>
+						<input id="temporal-hour" type="range" min="0" max="23" step="1" value="20" />
+						<div class="temporal-hour-scale" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+					</div>
 				</div>
 
 				<div class="explorer-control-group">

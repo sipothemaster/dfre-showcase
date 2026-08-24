@@ -22,6 +22,22 @@ type MapManifest = {
 	channel_codes: Record<string, string>;
 };
 
+type TemporalManifest = MetricManifest & {
+	semantics: string;
+	days: string[];
+	hours: number[];
+	default_day: string;
+	default_hour: number;
+	area_ids: string[];
+	parent_ids: string[];
+	files: Record<string, string>;
+};
+
+type TemporalValues = {
+	p: number[];
+	a: number[];
+};
+
 type FeatureCollection = {
 	type: 'FeatureCollection';
 	features: Array<{ type: 'Feature'; properties: Record<string, unknown>; geometry: unknown }>;
@@ -32,6 +48,10 @@ if (!root) throw new Error('Explorer root not found');
 const base = root.dataset.base ?? '/';
 
 const metricSelect = document.querySelector<HTMLSelectElement>('#map-metric')!;
+const temporalControls = document.querySelector<HTMLElement>('#temporal-controls')!;
+const temporalDay = document.querySelector<HTMLSelectElement>('#temporal-day')!;
+const temporalHour = document.querySelector<HTMLInputElement>('#temporal-hour')!;
+const temporalHourOutput = document.querySelector<HTMLOutputElement>('#temporal-hour-output')!;
 const areaSelect = document.querySelector<HTMLSelectElement>('#lad-search')!;
 const clearButton = document.querySelector<HTMLButtonElement>('#clear-area')!;
 const legend = document.querySelector<HTMLElement>('#map-legend')!;
@@ -50,8 +70,14 @@ const gbBounds: [[number, number], [number, number]] = [[-8.9, 49.7], [2.2, 59.2
 
 let manifest: MapManifest;
 let parents: FeatureCollection;
+let temporalManifest: TemporalManifest | null = null;
+let temporalValues: TemporalValues | null = null;
+let temporalAreaIndex = new globalThis.Map<string, number>();
+let temporalRequest = 0;
+const temporalCache = new globalThis.Map<string, TemporalValues>();
 let selectedParent: string | null = null;
 let selectedParentFeature: FeatureCollection['features'][number] | null = null;
+let selectedChildIds: string[] = [];
 
 function escapeHTML(value: unknown): string {
 	return String(value ?? '')
@@ -75,10 +101,45 @@ function formatPercent(value: unknown, inputIsShare = false): string {
 	return `${(inputIsShare ? number * 100 : number).toFixed(1)}%`;
 }
 
+async function fetchGzipJSON<T>(url: string): Promise<T> {
+	const response = await fetch(url);
+	if (!response.ok) throw new Error(`Temporal data returned ${response.status}`);
+	const bytes = new Uint8Array(await response.arrayBuffer());
+	const isGzip = bytes[0] === 0x1f && bytes[1] === 0x8b;
+	if (isGzip) {
+		const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+		return new Response(stream).json() as Promise<T>;
+	}
+	return JSON.parse(new TextDecoder().decode(bytes)) as T;
+}
+
+function selectedHour(): number {
+	return Math.max(0, Math.min(23, Number(temporalHour.value) || 0));
+}
+
+function temporalLabel(): string {
+	return `${temporalDay.value} ${String(selectedHour()).padStart(2, '0')}:00`;
+}
+
+function updateTemporalHourLabel() {
+	temporalHourOutput.value = `${String(selectedHour()).padStart(2, '0')}:00`;
+}
+
 function continuousExpression(property: string, breaks: number[]): ExpressionSpecification {
 	const stops: Array<string | number | ExpressionSpecification> = [];
 	breaks.forEach((value, index) => stops.push(value, continuousColors[index]));
 	return ['interpolate', ['linear'], ['coalesce', ['to-number', ['get', property]], breaks[0]], ...stops] as ExpressionSpecification;
+}
+
+function continuousStateExpression(property: string, breaks: number[]): ExpressionSpecification {
+	const stops: Array<string | number | ExpressionSpecification> = [];
+	breaks.forEach((value, index) => stops.push(value, continuousColors[index]));
+	return [
+		'interpolate',
+		['linear'],
+		['coalesce', ['to-number', ['feature-state', property]], breaks[0]],
+		...stops,
+	] as ExpressionSpecification;
 }
 
 function categoryExpression(property: string): ExpressionSpecification {
@@ -100,6 +161,12 @@ function currentMetric() {
 
 function paintExpression(): ExpressionSpecification {
 	const metric = currentMetric();
+	if (metric === 'open' && temporalManifest) {
+		return continuousStateExpression(
+			'open',
+			selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks,
+		);
+	}
 	if (metric in channelLabels) {
 		return selectedParent
 			? categoryExpression(metric)
@@ -111,6 +178,15 @@ function paintExpression(): ExpressionSpecification {
 
 function updateLegend() {
 	const metric = currentMetric();
+	if (metric === 'open' && temporalManifest) {
+		const breaks = selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks;
+		legend.innerHTML = `
+			<p>${escapeHTML(temporalManifest.label)} · ${escapeHTML(temporalLabel())} · ${selectedParent ? 'small area' : escapeHTML(temporalManifest.parent_label)}</p>
+			<div class="legend-ramp">${continuousColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
+			<div class="legend-values">${breaks.map((value) => `<span>${formatNumber(value, 1)}</span>`).join('')}</div>
+		`;
+		return;
+	}
 	if (metric in channelLabels && selectedParent) {
 		legend.innerHTML = `
 			<p>${escapeHTML(channelLabels[metric])} channel</p>
@@ -141,6 +217,69 @@ function updatePaint() {
 		map.setPaintProperty('parents-fill', 'fill-color', expression);
 	}
 	updateLegend();
+}
+
+async function ensureTemporalManifest(): Promise<TemporalManifest> {
+	if (temporalManifest) return temporalManifest;
+	temporalManifest = await fetchGzipJSON<TemporalManifest>(
+		`${base}map/v1/temporal/manifest.json.gz`,
+	);
+	temporalAreaIndex = new globalThis.Map(
+		temporalManifest.area_ids.map((id, index) => [id, index]),
+	);
+	return temporalManifest;
+}
+
+function applyTemporalState() {
+	if (!temporalManifest || !temporalValues) return;
+	if (map.getSource('parents')) {
+		temporalManifest.parent_ids.forEach((id, index) => {
+			map.setFeatureState({ source: 'parents', id }, { open: temporalValues!.p[index] });
+		});
+	}
+	if (map.getSource('children')) {
+		selectedChildIds.forEach((id) => {
+			const index = temporalAreaIndex.get(id);
+			if (index !== undefined) {
+				map.setFeatureState({ source: 'children', id }, { open: temporalValues!.a[index] });
+			}
+		});
+	}
+}
+
+async function loadTemporalValues() {
+	const request = ++temporalRequest;
+	const config = await ensureTemporalManifest();
+	const key = `${temporalDay.value}:${selectedHour()}`;
+	const filename = config.files[key];
+	if (!filename) throw new Error(`No scheduled opening asset for ${key}`);
+	loading.hidden = false;
+	loading.textContent = `Loading scheduled availability for ${temporalLabel()}…`;
+	try {
+		let values = temporalCache.get(key);
+		if (!values) {
+			values = await fetchGzipJSON<TemporalValues>(
+				`${base}map/v1/temporal/${filename}`,
+			);
+			temporalCache.set(key, values);
+		}
+		if (request !== temporalRequest) return;
+		temporalValues = values;
+		applyTemporalState();
+		updatePaint();
+	} finally {
+		if (request === temporalRequest) loading.hidden = true;
+	}
+}
+
+async function selectMetric() {
+	const isTemporal = currentMetric() === 'open';
+	temporalControls.hidden = !isTemporal;
+	if (isTemporal) {
+		await loadTemporalValues();
+	} else {
+		updatePaint();
+	}
 }
 
 function geometryBounds(geometry: unknown): LngLatBounds {
@@ -197,6 +336,9 @@ async function selectParent(feature: FeatureCollection['features'][number]) {
 		const response = await fetch(`${base}map/v1/children/${encodeURIComponent(id)}.geojson`);
 		if (!response.ok) throw new Error(`Child data returned ${response.status}`);
 		const childData = await response.json();
+		selectedChildIds = childData.features.map(
+			(feature: FeatureCollection['features'][number]) => String(feature.properties.id),
+		);
 		if (map.getLayer('children-outline')) map.removeLayer('children-outline');
 		if (map.getLayer('children-fill')) map.removeLayer('children-fill');
 		if (map.getSource('children')) map.removeSource('children');
@@ -215,6 +357,10 @@ async function selectParent(feature: FeatureCollection['features'][number]) {
 			source: 'children',
 			paint: { 'line-color': '#faf8f2', 'line-width': 0.55, 'line-opacity': 0.9 },
 		});
+		if (currentMetric() === 'open' && temporalValues) {
+			applyTemporalState();
+			map.once('idle', applyTemporalState);
+		}
 		map.setPaintProperty('parents-fill', 'fill-opacity', 0.08);
 		map.fitBounds(geometryBounds(feature.geometry), { padding: 64, maxZoom: 10, duration: 700 });
 		areaSelect.value = id;
@@ -232,6 +378,7 @@ function clearSelection() {
 	if (map.getSource('children')) map.removeSource('children');
 	selectedParent = null;
 	selectedParentFeature = null;
+	selectedChildIds = [];
 	areaSelect.value = '';
 	clearButton.disabled = true;
 	map.setPaintProperty('parents-fill', 'fill-opacity', 0.78);
@@ -322,7 +469,28 @@ map.on('mousemove', (event) => {
 		: '';
 });
 
-metricSelect.addEventListener('change', updatePaint);
+metricSelect.addEventListener('change', () => {
+	void selectMetric().catch((error) => {
+		loading.hidden = false;
+		loading.textContent = 'The scheduled opening data could not be loaded.';
+		console.error(error);
+	});
+});
+temporalHour.addEventListener('input', updateTemporalHourLabel);
+temporalHour.addEventListener('change', () => {
+	void loadTemporalValues().catch((error) => {
+		loading.hidden = false;
+		loading.textContent = 'The scheduled opening data could not be loaded.';
+		console.error(error);
+	});
+});
+temporalDay.addEventListener('change', () => {
+	void loadTemporalValues().catch((error) => {
+		loading.hidden = false;
+		loading.textContent = 'The scheduled opening data could not be loaded.';
+		console.error(error);
+	});
+});
 areaSelect.addEventListener('change', () => {
 	const feature = parents.features.find((item) => String(item.properties.id) === areaSelect.value);
 	if (feature) void selectParent(feature);

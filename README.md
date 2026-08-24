@@ -8,12 +8,15 @@ Production URL: `https://sipothemaster.github.io/dfre-showcase/`
 
 - A compact research architecture covering sampling, API discovery, cloud execution, storage, and production datasets.
 - A data-relationship model separating opening-hours-derived availability from observed open-now availability.
-- Direct-retailer versus Just Eat channel comparisons for matched grocery services.
+- Retailer-owned versus digital delivery platform comparisons for matched grocery services, using Just Eat as the observed platform.
 - Spatial findings on deprivation, rurality, and alternative exposure definitions.
 - A MapLibre explorer covering 43,064 LSOAs and Scottish Data Zones.
-- Versioned, area-level downloads with no postcodes, restaurant-level records, raw responses, or credentials.
 
 The former Dash application is not embedded or linked. It remains an internal research tool; this repository is the purpose-built public presentation layer.
+
+## Public terminology
+
+Use **digital delivery platforms** as the consistent umbrella term in public-facing analysis. Use **Just Eat** only when identifying the observed platform or a dataset category, and **retailer-owned delivery** for services operated directly by a grocery retailer. Avoid switching between “marketplace delivery” and “digital delivery platforms” for the same concept.
 
 ## Architecture
 
@@ -79,7 +82,7 @@ Because the Astro project has a GitHub project-page base path, use:
 http://localhost:4321/dfre-showcase/
 ```
 
-## Rebuilding the public data
+## Rebuilding the presentation artifacts
 
 The source repositories are expected to be sibling directories of this repository.
 
@@ -90,7 +93,7 @@ python ../delivery-analytics/scripts/export_showcase_retailer_channels.py
 python ../delivery-analytics/scripts/export_showcase_core_analysis.py
 ```
 
-Then publish the release and rebuild the map artifacts:
+Then synchronise the validated artifacts and rebuild the map assets:
 
 ```sh
 python scripts/sync_web_exports.py
@@ -98,11 +101,11 @@ python scripts/build_map_assets.py
 npm run build
 ```
 
-The map build validates 43,064 unique small-area keys and 350 LAD parent keys before writing output. Data manifests record release scope, byte size, and checksums where applicable.
+The map build validates 43,064 unique small-area keys and 350 LAD parent keys before writing output. Asset manifests record scope, byte size and checksums where applicable.
 
 ## Adding a future analysis
 
-Each public analysis is a content module in `src/content/analyses/`. Add a Markdown file with the collection schema fields defined in `src/content.config.ts`; Astro generates the analysis route and adds published modules to the homepage register automatically.
+Each detailed analysis is a content module in `src/content/analyses/`. Adding a Markdown file with the collection schema fields defined in `src/content.config.ts` generates its analysis route. Homepage findings remain deliberately curated in `src/pages/index.astro` and the corresponding presentation components.
 
 SEM and machine-learning work can therefore be added later without restructuring the site. New modules should keep their own claim status, geography, source dates, methods, limitations, and evidence asset. Draft work should remain outside the public collection or use a non-published status.
 
@@ -111,7 +114,7 @@ SEM and machine-learning work can therefore be added later without restructuring
 - One representative postcode is used for each LSOA or Scottish Data Zone.
 - Availability describes an observed delivery market, not household behaviour or consumption.
 - `Unknown` direct-retailer responses are never converted to `No`.
-- “Just Eat only” means the marketplace was observed where the matched direct service returned `No`; it is evidence of an additional observed channel, not a causal claim that Just Eat created access.
+- “Just Eat only” means the digital delivery platform was observed where the matched retailer-owned service returned `No`; it is evidence of an additional observed channel, not a causal claim that Just Eat created access.
 - Deprivation and health results are ecological and non-causal. Health estimates refer to 2024/25, while delivery exposure is a 2026 snapshot.
 
 ## Deployment

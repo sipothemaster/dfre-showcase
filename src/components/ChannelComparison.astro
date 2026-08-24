@@ -6,7 +6,6 @@ const categoryClasses: Record<string, string> = {
 	'Direct only': 'direct',
 	'Just Eat only': 'platform',
 	'Neither observed': 'neither',
-	'Direct unresolved': 'unresolved',
 };
 
 const legend = [
@@ -14,7 +13,6 @@ const legend = [
 	['Direct only', 'direct'],
 	['Just Eat only', 'platform'],
 	['Neither observed', 'neither'],
-	['Direct unresolved', 'unresolved'],
 ];
 ---
 
@@ -32,7 +30,8 @@ const legend = [
 	<div class="channel-rows">
 		{data.comparisons.map((comparison) => {
 			const platform = comparison.categories.find((item) => item.category === 'Just Eat only');
-			const aria = comparison.categories
+			const visibleCategories = comparison.categories.filter((item) => item.category !== 'Direct unresolved');
+			const aria = visibleCategories
 				.map((item) => `${item.category}: ${item.percent}%`)
 				.join(', ');
 			return (
@@ -45,7 +44,7 @@ const legend = [
 						<p class="platform-value"><strong>{platform?.percent}%</strong> Just Eat only</p>
 					</div>
 					<div class="channel-bar" role="img" aria-label={`${comparison.retailer_label}. ${aria}`}>
-						{comparison.categories.map((item) => item.percent > 0 && (
+						{visibleCategories.map((item) => item.percent > 0 && (
 							<span
 								class={`channel-segment ${categoryClasses[item.category]}`}
 								style={`--segment-width: ${item.percent}%`}
@@ -59,6 +58,6 @@ const legend = [
 	</div>
 
 	<p class="figure-note">
-		Percentages use all 43,064 representative-postcode markets. “Just Eat only” means that the brand was observed on Just Eat while the compared direct service returned No; it does not establish that Just Eat caused an expansion in coverage. Iceland compares standard direct delivery with marketplace delivery and should be interpreted separately from the fast-delivery pairs.
+		Percentages use all 43,064 representative-postcode markets. “Just Eat only” means that the brand was observed on Just Eat while the compared direct service returned No; it does not establish that Just Eat caused an expansion in coverage. Only resolved direct-delivery states are displayed. Iceland compares standard direct delivery with delivery through a digital delivery platform and should be interpreted separately from the fast-delivery pairs.
 	</p>
 </figure>

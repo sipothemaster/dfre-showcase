@@ -58,6 +58,16 @@ def main() -> None:
             public_data / "retailer_channel_areas.csv",
         )
     )
+    files.append(
+        copy(
+            source / "02_adjusted_imd_score_predictions.png",
+            args.showcase_root
+            / "public"
+            / "images"
+            / "analysis"
+            / "02_adjusted_imd_score_predictions.png",
+        )
+    )
 
     manifest = {
         "release": "v1",

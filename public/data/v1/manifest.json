@@ -5,13 +5,13 @@
   "files": [
     {
       "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/src/data/generated/core_analysis_summary.json",
-      "bytes": 3270,
-      "sha256": "5bc4b41176467ee1fcd426371a627e1629da153107aa5d6c8134ededffe44eb6"
+      "bytes": 4296,
+      "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
     },
     {
       "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/data/v1/core_analysis_summary.json",
-      "bytes": 3270,
-      "sha256": "5bc4b41176467ee1fcd426371a627e1629da153107aa5d6c8134ededffe44eb6"
+      "bytes": 4296,
+      "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
     },
     {
       "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/src/data/generated/retailer_channel_summary.json",
@@ -27,6 +27,11 @@
       "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/data/v1/retailer_channel_areas.csv",
       "bytes": 10335903,
       "sha256": "fc7fa6dd388d770329ff93c0c2806d10f644c125d6928a06ed6e5f2ad9cad83d"
+    },
+    {
+      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/images/analysis/02_adjusted_imd_score_predictions.png",
+      "bytes": 195803,
+      "sha256": "0c7e84d5d84a5c51024e50120207c215e8daaee7c8583099bff7ceecad69f88e"
     }
   ]
 }
