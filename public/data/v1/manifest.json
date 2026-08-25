@@ -4,34 +4,39 @@
   "privacy": "No postcodes, restaurant-level records or credentials",
   "files": [
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/src/data/generated/core_analysis_summary.json",
+      "path": "src/data/generated/core_analysis_summary.json",
       "bytes": 4296,
       "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
     },
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/data/v1/core_analysis_summary.json",
+      "path": "public/data/v1/core_analysis_summary.json",
       "bytes": 4296,
       "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
     },
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/src/data/generated/retailer_channel_summary.json",
+      "path": "src/data/generated/retailer_channel_summary.json",
       "bytes": 3881,
       "sha256": "72c191cf2e31b0e8ca37eec61da7ff3e03d39bed413904c9b4b4a072e03e938f"
     },
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/data/v1/retailer_channel_summary.json",
+      "path": "public/data/v1/retailer_channel_summary.json",
       "bytes": 3881,
       "sha256": "72c191cf2e31b0e8ca37eec61da7ff3e03d39bed413904c9b4b4a072e03e938f"
     },
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/data/v1/retailer_channel_areas.csv",
+      "path": "public/data/v1/retailer_channel_areas.csv",
       "bytes": 10335903,
       "sha256": "fc7fa6dd388d770329ff93c0c2806d10f644c125d6928a06ed6e5f2ad9cad83d"
     },
     {
-      "path": "C:/Users/sipoX/Documents/DFRE/code/dfre-showcase/public/images/analysis/02_adjusted_imd_score_predictions.png",
+      "path": "public/images/analysis/02_adjusted_imd_score_predictions.png",
       "bytes": 195803,
       "sha256": "0c7e84d5d84a5c51024e50120207c215e8daaee7c8583099bff7ceecad69f88e"
+    },
+    {
+      "path": "src/data/generated/retailer_channel_summary_england.json",
+      "bytes": 2638,
+      "sha256": "f6ec1deba20e09219cf01829a9d6e584a90e7e46e07449ff2312a949e806362f"
     }
   ]
 }
