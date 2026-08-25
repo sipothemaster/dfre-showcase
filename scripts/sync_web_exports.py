@@ -8,6 +8,8 @@ import json
 import shutil
 from pathlib import Path
 
+from import_retailer_channel_summary import write_summary
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -68,6 +70,21 @@ def main() -> None:
             / "02_adjusted_imd_score_predictions.png",
         )
     )
+
+    england_summary = build_data / "retailer_channel_summary_england.json"
+    write_summary(public_data / "retailer_channel_areas.csv", england_summary)
+    files.append(
+        {
+            "path": england_summary.as_posix(),
+            "bytes": england_summary.stat().st_size,
+            "sha256": sha256(england_summary),
+        }
+    )
+
+    for item in files:
+        path = Path(str(item["path"]))
+        if path.is_absolute():
+            item["path"] = path.relative_to(args.showcase_root).as_posix()
 
     manifest = {
         "release": "v1",

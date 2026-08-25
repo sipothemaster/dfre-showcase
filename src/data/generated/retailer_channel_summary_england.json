@@ -1,34 +1,105 @@
 {
+  "schemaVersion": 1,
   "geography": "33,755 England LSOA 2021 representative-postcode markets",
+  "sourceContract": {
+    "owner": "delivery-analytics",
+    "upstreamFile": "outputs/web/retailer_channel_areas.csv",
+    "localImportedFile": "public/data/v1/retailer_channel_areas.csv",
+    "bytes": 10335903,
+    "sha256": "fc7fa6dd388d770329ff93c0c2806d10f644c125d6928a06ed6e5f2ad9cad83d",
+    "filter": "geography_code begins with E",
+    "denominator": 33755,
+    "unknownHandling": "Direct unresolved remains a separate category and is not converted to Direct only or Neither observed."
+  },
   "comparisons": [
     {
       "comparison": "coop",
       "categories": [
-        { "category": "Both channels", "count": 20783, "percent": 61.57 },
-        { "category": "Direct only", "count": 1189, "percent": 3.52 },
-        { "category": "Just Eat only", "count": 6707, "percent": 19.87 },
-        { "category": "Neither observed", "count": 5065, "percent": 15.01 },
-        { "category": "Direct unresolved", "count": 11, "percent": 0.03 }
+        {
+          "category": "Both channels",
+          "count": 20783,
+          "percent": 61.57
+        },
+        {
+          "category": "Direct only",
+          "count": 1189,
+          "percent": 3.52
+        },
+        {
+          "category": "Just Eat only",
+          "count": 6707,
+          "percent": 19.87
+        },
+        {
+          "category": "Neither observed",
+          "count": 5065,
+          "percent": 15.01
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 11,
+          "percent": 0.03
+        }
       ]
     },
     {
       "comparison": "sainsburys_fast",
       "categories": [
-        { "category": "Both channels", "count": 25119, "percent": 74.42 },
-        { "category": "Direct only", "count": 814, "percent": 2.41 },
-        { "category": "Just Eat only", "count": 2899, "percent": 8.59 },
-        { "category": "Neither observed", "count": 4923, "percent": 14.58 },
-        { "category": "Direct unresolved", "count": 0, "percent": 0.0 }
+        {
+          "category": "Both channels",
+          "count": 25119,
+          "percent": 74.42
+        },
+        {
+          "category": "Direct only",
+          "count": 814,
+          "percent": 2.41
+        },
+        {
+          "category": "Just Eat only",
+          "count": 2899,
+          "percent": 8.59
+        },
+        {
+          "category": "Neither observed",
+          "count": 4923,
+          "percent": 14.58
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 0,
+          "percent": 0.0
+        }
       ]
     },
     {
       "comparison": "morrisons_fast",
       "categories": [
-        { "category": "Both channels", "count": 19222, "percent": 56.95 },
-        { "category": "Direct only", "count": 599, "percent": 1.77 },
-        { "category": "Just Eat only", "count": 9231, "percent": 27.35 },
-        { "category": "Neither observed", "count": 4703, "percent": 13.93 },
-        { "category": "Direct unresolved", "count": 0, "percent": 0.0 }
+        {
+          "category": "Both channels",
+          "count": 19222,
+          "percent": 56.95
+        },
+        {
+          "category": "Direct only",
+          "count": 599,
+          "percent": 1.77
+        },
+        {
+          "category": "Just Eat only",
+          "count": 9231,
+          "percent": 27.35
+        },
+        {
+          "category": "Neither observed",
+          "count": 4703,
+          "percent": 13.93
+        },
+        {
+          "category": "Direct unresolved",
+          "count": 0,
+          "percent": 0.0
+        }
       ]
     }
   ]
