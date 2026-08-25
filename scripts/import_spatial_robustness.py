@@ -66,6 +66,7 @@ def build_export(analytics_root: Path) -> dict[str, object]:
     for estimator in ("OLS HC3", "SEM GMM"):
         values = [
             {
+                "imd_decile": int(float(row["imd_decile"])),
                 "imd_score": round(as_float(row, "imd_score"), 6),
                 "prediction_pct": round(
                     as_float(row, "predicted_original_scale"), 6
@@ -80,9 +81,11 @@ def build_export(analytics_root: Path) -> dict[str, object]:
             for row in prediction_rows
             if row["estimator"] == estimator
         ]
-        values.sort(key=lambda row: row["imd_score"])
-        if len(values) != 100:
-            raise ValueError(f"Expected 100 prediction rows for {estimator}")
+        values.sort(key=lambda row: row["imd_decile"])
+        if [row["imd_decile"] for row in values] != list(range(1, 11)):
+            raise ValueError(
+                f"Expected one prediction for every IMD decile for {estimator}"
+            )
         curves.append({"estimator": estimator, "values": values})
 
     model_rows = read_rows(paths["model_summary"])
@@ -126,6 +129,10 @@ def build_export(analytics_root: Path) -> dict[str, object]:
             "missing_data_rule": share_model["missing_data_rule"],
         },
         "outcome": "Empirical-logit fast-food share, displayed as a percentage",
+        "imd_display": (
+            "Continuous-score models evaluated at the median IMD score within "
+            "each official decile; contrast is decile 1 minus decile 10"
+        ),
         "formula": share_model["formula"],
         "baseline": {
             "estimator": "OLS with HC3 covariance",

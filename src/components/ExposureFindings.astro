@@ -7,15 +7,9 @@ const regressionFigure = `${base.replace(/\/$/, '')}/images/analysis/02_adjusted
 ---
 
 <section class="exposure-model" aria-labelledby="exposure-model-title">
-	<header class="exposure-model-heading">
-		<div>
-			<p class="method-label">Adjusted regression</p>
-			<h3 id="exposure-model-title">A common adjustment structure is applied to three exposure measures.</h3>
-		</div>
-		<p>Continuous IMD score is modelled non-linearly. Rural–urban class, population density and region are held in the same specification for count, density and share.</p>
-	</header>
-
-	<div class="regression-specification">
+	<div class="regression-module">
+		<p id="exposure-model-title" class="method-label">Adjusted regression</p>
+		<div class="regression-specification">
 		<div
 			class="regression-equation"
 			role="math"
@@ -25,10 +19,7 @@ const regressionFigure = `${base.replace(/\/$/, '')}/images/analysis/02_adjusted
 			<b>=</b>
 			<span><i>β</i><sub>0k</sub> + <i>s</i><sub>k</sub>(IMD<sub>i</sub>) + <i>γ</i><sub>k</sub>RUC<sub>i</sub> + <i>β</i><sub>1k</sub>log(1 + population density<sub>i</sub>) + <i>δ</i><sub>k</sub>region<sub>i</sub></span>
 		</div>
-		<div class="regression-equation-note">
-			<p><i>i</i> indexes England LSOAs and <i>k</i> indexes the three exposure outcomes. <i>s</i><sub>k</sub>(IMD) is a restricted cubic spline with four degrees of freedom; RUC 2021 and region enter as categorical terms, and population density is log-transformed.</p>
-			<p>The outcome-specific link <i>g</i><sub>k</sub> is log for the negative-binomial count model, identity for OLS on log(1 + density), and logit for the fractional-share model.</p>
-		</div>
+		<p class="regression-symbols"><i>i</i>: England LSOA · <i>k</i>: exposure measure · <i>X</i><sub>i</sub>: covariates · <i>g</i><sub>k</sub>: outcome-specific link · <i>s</i><sub>k</sub>: IMD spline · RUC<sub>i</sub>: rural–urban class</p>
 
 		<div class="regression-model-grid">
 			{model.models.map((entry) => (
@@ -41,25 +32,26 @@ const regressionFigure = `${base.replace(/\/$/, '')}/images/analysis/02_adjusted
 		</div>
 
 		<p class="regression-meta">{model.covariance} covariance · {(model.confidence_level * 100).toFixed(0)}% confidence intervals · predictions across the {model.imd_range}</p>
+		</div>
 	</div>
 
 	<figure class="regression-figure" aria-labelledby="regression-figure-title">
 		<div class="regression-figure-heading">
 			<div>
 				<p class="method-label">Conditional association</p>
-				<h3 id="regression-figure-title">Adjusted fast-food exposure across the continuous IMD score</h3>
+				<h3 id="regression-figure-title">Adjusted fast-food exposure across official IMD deciles</h3>
 			</div>
-			<p>Higher IMD scores indicate greater deprivation. Predictions hold RUC at {model.reference_profile.ruc21nm}, region at {model.reference_profile.region22nm}, and population density at the {model.reference_profile.population_density.toLowerCase()}.</p>
+			<p>Models adjust for rural–urban classification, population density and region.</p>
 		</div>
 
 		<div class="regression-image-frame">
 			<img
 				src={regressionFigure}
-				alt="Three adjusted regression curves for fast-food restaurant count, population-standardised density and fast-food share across the continuous IMD score. Each curve includes a shaded 95% confidence interval."
+				alt="Three adjusted regression curves for fast-food restaurant count, population-standardised density and fast-food share across official IMD deciles. Each curve includes point estimates and a shaded 95% confidence interval."
 				loading="lazy"
 			/>
 		</div>
 
-		<figcaption>Lines are model-predicted values; shaded ribbons are robust 95% confidence intervals. The curves describe conditional area-level associations and do not identify platform targeting, ordering or consumption.</figcaption>
+		<figcaption>Models use continuous IMD score; points show adjusted predictions evaluated at the median score within each official decile. Shaded ribbons are robust 95% confidence intervals. The curves describe conditional area-level associations and do not identify platform targeting, ordering or consumption.</figcaption>
 	</figure>
 </section>

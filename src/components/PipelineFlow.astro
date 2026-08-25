@@ -6,7 +6,7 @@
 	<section class="architecture-band compact-workflow" aria-labelledby="workflow-title">
 		<header class="architecture-band-header">
 			<div>
-				<p class="architecture-kicker">Research architecture</p>
+				<p class="architecture-kicker">Data architecture</p>
 				<h3 id="workflow-title">Spatial delivery data pipeline</h3>
 			</div>
 			<a class="repository-link" href="https://github.com/sipothemaster/delivery-availability-pipeline" target="_blank" rel="noreferrer">
@@ -35,11 +35,11 @@
 				<p id="discovery-module-title"><span>02</span> API discovery and reusable collection</p>
 			</header>
 			<div class="compact-route discovery-route" aria-label="API reverse engineering workflow">
-				<span><strong>Capture Fetch/XHR<br />with Playwright</strong></span>
+				<span><strong>Observe browser<br />network traffic</strong></span>
 				<b aria-hidden="true">→</b>
-				<span><strong>Validate the enriched<br /><code>/byslug/&#123;postcode&#125;</code> API</strong></span>
+				<span><strong>Validate the listing API<br />and response schema</strong></span>
 				<b aria-hidden="true">→</b>
-				<span><strong>Build a parameterised<br />batch client</strong></span>
+				<span><strong>Implement a reusable<br />postcode API client</strong></span>
 			</div>
 		</section>
 
@@ -82,7 +82,7 @@
 
 		<section class="workflow-module relationship-module" aria-labelledby="relationship-module-title">
 			<header>
-				<p id="relationship-module-title">Delivery data relationships</p>
+				<p id="relationship-module-title">Dataset relationships</p>
 			</header>
 			<div class="relationship-map" aria-label="Representative postcodes feed static restaurant coverage, observed open-now availability and direct grocery availability. Static coverage links to opening schedules and restaurant profiles; observed availability also links to restaurant profiles.">
 				<div class="relationship-canvas">
@@ -112,27 +112,27 @@
 					<article class="relationship-node relationship-full">
 						<strong>Static coverage — Postcode × restaurant</strong>
 						<p class="relationship-scale">16,534,508 rows</p>
-						<p class="relationship-structure">Delivery state · fee · minimum order · ETA · drive distance</p>
+						<p class="relationship-structure">Postcode · restaurant ID · delivery state · fee · minimum order · ETA · drive distance</p>
 					</article>
 					<article class="relationship-node relationship-opening">
 						<strong>Opening schedules — Restaurant × service × time</strong>
 						<p class="relationship-scale">Normalised opening intervals</p>
-						<p class="relationship-structure">Local open/close time · timezone · cross-midnight flag</p>
+						<p class="relationship-structure">Restaurant ID · service type · day · open/close time · timezone · cross-midnight flag</p>
 					</article>
 					<article class="relationship-node relationship-live">
 						<strong>Observed availability — Postcode × collection window × open restaurant</strong>
 						<p class="relationship-scale">30,025,952 rows · Weekday afternoon · Weekday evening · Weekday early hours · Saturday peak</p>
-						<p class="relationship-structure">Window label · planned time · captured time · restaurant ID · live delivery attributes</p>
+						<p class="relationship-structure">Postcode · restaurant ID · collection window · scheduled time · captured time · live delivery attributes</p>
 					</article>
 					<article class="relationship-node relationship-profile">
 						<strong>Restaurant profile — Restaurant</strong>
 						<p class="relationship-scale">100,850 restaurants</p>
-						<p class="relationship-structure">Name · location · cuisine · rating · platform URL</p>
+						<p class="relationship-structure">Restaurant ID · name · location · cuisine · rating · platform URL</p>
 					</article>
 					<article class="relationship-node relationship-grocery">
 						<strong>Direct grocery availability — Service × LSOA / Data Zone</strong>
 						<p class="relationship-scale">6 services × 43,064 areas</p>
-						<p class="relationship-structure">Area code · Yes / No / Unknown · fast / scheduled delivery</p>
+						<p class="relationship-structure">Service · area code · availability state · delivery type</p>
 					</article>
 				</div>
 			</div>
