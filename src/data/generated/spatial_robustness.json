@@ -1,0 +1,1295 @@
+{
+  "title": "Spatial robustness of the deprivation gradient",
+  "claim_status": "exploratory robustness analysis",
+  "provenance": {
+    "repository": "delivery-analytics",
+    "notebook": "notebooks/04_robustness_extensions.ipynb",
+    "sources": [
+      {
+        "path": "outputs/tables/04_sem_imd_predictions.csv",
+        "bytes": 83134,
+        "sha256": "1b85732830abb2dc5ceb5e2a07830a713b398dd4ec079810847406015887276b"
+      },
+      {
+        "path": "outputs/tables/04_sem_model_summary.csv",
+        "bytes": 1500,
+        "sha256": "540de7d85075fa727c6135d411c162ef0330ae7e999c8f24de362161c20ac0ea"
+      },
+      {
+        "path": "outputs/tables/04_sem_imd_endpoint_contrasts.csv",
+        "bytes": 872,
+        "sha256": "d74e5564dc03071eb785c545d56d7e1b254afec345b1de5c5eb392295bdad878"
+      },
+      {
+        "path": "outputs/tables/04_lsoa_rook_weights_audit.csv",
+        "bytes": 384,
+        "sha256": "ccec88f709e38493168a86b8d9122b6dc1421ce804ea06ce466645286d51b189"
+      },
+      {
+        "path": "outputs/tables/04_jaccard_sem_model_summary.csv",
+        "bytes": 1700,
+        "sha256": "6af4a3bfa8413304e990b0d28d1f3769c568abd99101907c7255f80015ede373"
+      },
+      {
+        "path": "outputs/tables/04_jaccard_sem_imd_endpoint_contrasts.csv",
+        "bytes": 581,
+        "sha256": "e151015f07d9ffe0a153620214bbf87ab7334d6452e0ac610cc9bb1056c91eb3"
+      },
+      {
+        "path": "outputs/tables/04_mixed_sem_imd_endpoint_contrasts.csv",
+        "bytes": 951,
+        "sha256": "77c4a107d4c627ed8a3145d2e090897982f6ac81b81121a80fecbebbf1f92ff9"
+      }
+    ]
+  },
+  "sample": {
+    "geography": "England LSOA 2021",
+    "n": 33411,
+    "missing_data_rule": "exclude food_restaurant_count = 0; empirical-logit correction 0.5"
+  },
+  "outcome": "Empirical-logit fast-food share, displayed as a percentage",
+  "formula": "empirical_logit_fast_food_share ~ cr(imd_score, df=4, constraints='center') + C(ruc21nm) + log_population_density + C(region22nm)",
+  "baseline": {
+    "estimator": "OLS with HC3 covariance",
+    "residual_morans_i": 0.722,
+    "imd_change_percentage_points": 2.26
+  },
+  "rook_sem": {
+    "estimator": "Heteroskedastic GMM spatial error (GM_Error_Het)",
+    "weights": "Rook contiguity with shared boundary > 1 metre; row-standardised",
+    "undirected_edges": 96370,
+    "lambda": 0.856,
+    "filtered_residual_morans_i": -0.054,
+    "imd_change_percentage_points": 0.02
+  },
+  "network_sensitivity": {
+    "definition": "Jaccard similarity between the sets of deliverable food restaurants at each LSOA representative postcode",
+    "top_k": [
+      10,
+      20,
+      30
+    ],
+    "lambda_range": [
+      0.98,
+      0.99
+    ],
+    "imd_change_range_percentage_points": [
+      0.06,
+      0.13
+    ],
+    "all_mixed_weight_contrast_intervals_include_zero": true,
+    "interpretation": "Alternative network and mixed weights also flatten the IMD gradient, but near-boundary lambdas, shifting prediction levels and remaining residual dependence indicate model instability rather than a preferred spatial specification."
+  },
+  "curves": [
+    {
+      "estimator": "OLS HC3",
+      "values": [
+        {
+          "imd_score": 1.951,
+          "prediction_pct": 50.435466,
+          "ci_lower_pct": 50.043675,
+          "ci_upper_pct": 50.827203
+        },
+        {
+          "imd_score": 2.625967,
+          "prediction_pct": 50.539498,
+          "ci_lower_pct": 50.179866,
+          "ci_upper_pct": 50.899075
+        },
+        {
+          "imd_score": 3.300934,
+          "prediction_pct": 50.641765,
+          "ci_lower_pct": 50.310022,
+          "ci_upper_pct": 50.973451
+        },
+        {
+          "imd_score": 3.975901,
+          "prediction_pct": 50.741784,
+          "ci_lower_pct": 50.432951,
+          "ci_upper_pct": 51.050559
+        },
+        {
+          "imd_score": 4.650868,
+          "prediction_pct": 50.83907,
+          "ci_lower_pct": 50.547651,
+          "ci_upper_pct": 51.130432
+        },
+        {
+          "imd_score": 5.325835,
+          "prediction_pct": 50.933141,
+          "ci_lower_pct": 50.653464,
+          "ci_upper_pct": 51.21276
+        },
+        {
+          "imd_score": 6.000802,
+          "prediction_pct": 51.023515,
+          "ci_lower_pct": 50.750191,
+          "ci_upper_pct": 51.296777
+        },
+        {
+          "imd_score": 6.675769,
+          "prediction_pct": 51.109708,
+          "ci_lower_pct": 50.838103,
+          "ci_upper_pct": 51.381247
+        },
+        {
+          "imd_score": 7.350737,
+          "prediction_pct": 51.191238,
+          "ci_lower_pct": 50.917824,
+          "ci_upper_pct": 51.464582
+        },
+        {
+          "imd_score": 8.025704,
+          "prediction_pct": 51.267624,
+          "ci_lower_pct": 50.990145,
+          "ci_upper_pct": 51.545025
+        },
+        {
+          "imd_score": 8.700671,
+          "prediction_pct": 51.338383,
+          "ci_lower_pct": 51.055849,
+          "ci_upper_pct": 51.620832
+        },
+        {
+          "imd_score": 9.375638,
+          "prediction_pct": 51.403034,
+          "ci_lower_pct": 51.11559,
+          "ci_upper_pct": 51.690386
+        },
+        {
+          "imd_score": 10.050605,
+          "prediction_pct": 51.461096,
+          "ci_lower_pct": 51.169829,
+          "ci_upper_pct": 51.752264
+        },
+        {
+          "imd_score": 10.725572,
+          "prediction_pct": 51.512086,
+          "ci_lower_pct": 51.218817,
+          "ci_upper_pct": 51.805252
+        },
+        {
+          "imd_score": 11.400539,
+          "prediction_pct": 51.555721,
+          "ci_lower_pct": 51.262689,
+          "ci_upper_pct": 51.848647
+        },
+        {
+          "imd_score": 12.075506,
+          "prediction_pct": 51.592522,
+          "ci_lower_pct": 51.301806,
+          "ci_upper_pct": 51.88313
+        },
+        {
+          "imd_score": 12.750473,
+          "prediction_pct": 51.623213,
+          "ci_lower_pct": 51.336459,
+          "ci_upper_pct": 51.90986
+        },
+        {
+          "imd_score": 13.42544,
+          "prediction_pct": 51.648521,
+          "ci_lower_pct": 51.366814,
+          "ci_upper_pct": 51.930123
+        },
+        {
+          "imd_score": 14.100407,
+          "prediction_pct": 51.66917,
+          "ci_lower_pct": 51.392962,
+          "ci_upper_pct": 51.945277
+        },
+        {
+          "imd_score": 14.775374,
+          "prediction_pct": 51.685886,
+          "ci_lower_pct": 51.414968,
+          "ci_upper_pct": 51.956706
+        },
+        {
+          "imd_score": 15.450341,
+          "prediction_pct": 51.699394,
+          "ci_lower_pct": 51.432929,
+          "ci_upper_pct": 51.965762
+        },
+        {
+          "imd_score": 16.125308,
+          "prediction_pct": 51.710418,
+          "ci_lower_pct": 51.44704,
+          "ci_upper_pct": 51.973701
+        },
+        {
+          "imd_score": 16.800276,
+          "prediction_pct": 51.719683,
+          "ci_lower_pct": 51.457656,
+          "ci_upper_pct": 51.981616
+        },
+        {
+          "imd_score": 17.475243,
+          "prediction_pct": 51.727914,
+          "ci_lower_pct": 51.465348,
+          "ci_upper_pct": 51.990385
+        },
+        {
+          "imd_score": 18.15021,
+          "prediction_pct": 51.735836,
+          "ci_lower_pct": 51.470923,
+          "ci_upper_pct": 52.000652
+        },
+        {
+          "imd_score": 18.825177,
+          "prediction_pct": 51.744174,
+          "ci_lower_pct": 51.475415,
+          "ci_upper_pct": 52.012831
+        },
+        {
+          "imd_score": 19.500144,
+          "prediction_pct": 51.753651,
+          "ci_lower_pct": 51.480037,
+          "ci_upper_pct": 52.02716
+        },
+        {
+          "imd_score": 20.175111,
+          "prediction_pct": 51.764993,
+          "ci_lower_pct": 51.486119,
+          "ci_upper_pct": 52.043756
+        },
+        {
+          "imd_score": 20.850078,
+          "prediction_pct": 51.778791,
+          "ci_lower_pct": 51.494869,
+          "ci_upper_pct": 52.062599
+        },
+        {
+          "imd_score": 21.525045,
+          "prediction_pct": 51.795039,
+          "ci_lower_pct": 51.506662,
+          "ci_upper_pct": 52.083296
+        },
+        {
+          "imd_score": 22.200012,
+          "prediction_pct": 51.813556,
+          "ci_lower_pct": 51.521528,
+          "ci_upper_pct": 52.10546
+        },
+        {
+          "imd_score": 22.874979,
+          "prediction_pct": 51.834163,
+          "ci_lower_pct": 51.539394,
+          "ci_upper_pct": 52.128805
+        },
+        {
+          "imd_score": 23.549946,
+          "prediction_pct": 51.856682,
+          "ci_lower_pct": 51.560111,
+          "ci_upper_pct": 52.153123
+        },
+        {
+          "imd_score": 24.224913,
+          "prediction_pct": 51.880934,
+          "ci_lower_pct": 51.583468,
+          "ci_upper_pct": 52.178267
+        },
+        {
+          "imd_score": 24.89988,
+          "prediction_pct": 51.906739,
+          "ci_lower_pct": 51.609212,
+          "ci_upper_pct": 52.204131
+        },
+        {
+          "imd_score": 25.574847,
+          "prediction_pct": 51.933918,
+          "ci_lower_pct": 51.637059,
+          "ci_upper_pct": 52.230641
+        },
+        {
+          "imd_score": 26.249815,
+          "prediction_pct": 51.962293,
+          "ci_lower_pct": 51.666699,
+          "ci_upper_pct": 52.25775
+        },
+        {
+          "imd_score": 26.924782,
+          "prediction_pct": 51.991684,
+          "ci_lower_pct": 51.697809,
+          "ci_upper_pct": 52.285421
+        },
+        {
+          "imd_score": 27.599749,
+          "prediction_pct": 52.021912,
+          "ci_lower_pct": 51.730056,
+          "ci_upper_pct": 52.313631
+        },
+        {
+          "imd_score": 28.274716,
+          "prediction_pct": 52.052799,
+          "ci_lower_pct": 51.763106,
+          "ci_upper_pct": 52.342355
+        },
+        {
+          "imd_score": 28.949683,
+          "prediction_pct": 52.084166,
+          "ci_lower_pct": 51.796626,
+          "ci_upper_pct": 52.371567
+        },
+        {
+          "imd_score": 29.62465,
+          "prediction_pct": 52.115832,
+          "ci_lower_pct": 51.830297,
+          "ci_upper_pct": 52.40123
+        },
+        {
+          "imd_score": 30.299617,
+          "prediction_pct": 52.147621,
+          "ci_lower_pct": 51.863814,
+          "ci_upper_pct": 52.43129
+        },
+        {
+          "imd_score": 30.974584,
+          "prediction_pct": 52.179353,
+          "ci_lower_pct": 51.896894,
+          "ci_upper_pct": 52.461672
+        },
+        {
+          "imd_score": 31.649551,
+          "prediction_pct": 52.210848,
+          "ci_lower_pct": 51.929283,
+          "ci_upper_pct": 52.492273
+        },
+        {
+          "imd_score": 32.324518,
+          "prediction_pct": 52.241929,
+          "ci_lower_pct": 51.960756,
+          "ci_upper_pct": 52.522961
+        },
+        {
+          "imd_score": 32.999485,
+          "prediction_pct": 52.272417,
+          "ci_lower_pct": 51.99112,
+          "ci_upper_pct": 52.55357
+        },
+        {
+          "imd_score": 33.674452,
+          "prediction_pct": 52.302133,
+          "ci_lower_pct": 52.020217,
+          "ci_upper_pct": 52.583902
+        },
+        {
+          "imd_score": 34.349419,
+          "prediction_pct": 52.330904,
+          "ci_lower_pct": 52.047924,
+          "ci_upper_pct": 52.613735
+        },
+        {
+          "imd_score": 35.024386,
+          "prediction_pct": 52.358656,
+          "ci_lower_pct": 52.07424,
+          "ci_upper_pct": 52.64292
+        },
+        {
+          "imd_score": 35.699354,
+          "prediction_pct": 52.385399,
+          "ci_lower_pct": 52.099252,
+          "ci_upper_pct": 52.67139
+        },
+        {
+          "imd_score": 36.374321,
+          "prediction_pct": 52.411144,
+          "ci_lower_pct": 52.123042,
+          "ci_upper_pct": 52.699086
+        },
+        {
+          "imd_score": 37.049288,
+          "prediction_pct": 52.435903,
+          "ci_lower_pct": 52.145684,
+          "ci_upper_pct": 52.725957
+        },
+        {
+          "imd_score": 37.724255,
+          "prediction_pct": 52.459687,
+          "ci_lower_pct": 52.167247,
+          "ci_upper_pct": 52.751958
+        },
+        {
+          "imd_score": 38.399222,
+          "prediction_pct": 52.482507,
+          "ci_lower_pct": 52.187791,
+          "ci_upper_pct": 52.777051
+        },
+        {
+          "imd_score": 39.074189,
+          "prediction_pct": 52.504377,
+          "ci_lower_pct": 52.207372,
+          "ci_upper_pct": 52.801204
+        },
+        {
+          "imd_score": 39.749156,
+          "prediction_pct": 52.525306,
+          "ci_lower_pct": 52.226039,
+          "ci_upper_pct": 52.824391
+        },
+        {
+          "imd_score": 40.424123,
+          "prediction_pct": 52.545307,
+          "ci_lower_pct": 52.243835,
+          "ci_upper_pct": 52.846593
+        },
+        {
+          "imd_score": 41.09909,
+          "prediction_pct": 52.564391,
+          "ci_lower_pct": 52.260798,
+          "ci_upper_pct": 52.867796
+        },
+        {
+          "imd_score": 41.774057,
+          "prediction_pct": 52.582571,
+          "ci_lower_pct": 52.27696,
+          "ci_upper_pct": 52.887988
+        },
+        {
+          "imd_score": 42.449024,
+          "prediction_pct": 52.599857,
+          "ci_lower_pct": 52.292351,
+          "ci_upper_pct": 52.907165
+        },
+        {
+          "imd_score": 43.123991,
+          "prediction_pct": 52.616261,
+          "ci_lower_pct": 52.306995,
+          "ci_upper_pct": 52.925326
+        },
+        {
+          "imd_score": 43.798958,
+          "prediction_pct": 52.631794,
+          "ci_lower_pct": 52.320912,
+          "ci_upper_pct": 52.942472
+        },
+        {
+          "imd_score": 44.473925,
+          "prediction_pct": 52.646469,
+          "ci_lower_pct": 52.33412,
+          "ci_upper_pct": 52.958611
+        },
+        {
+          "imd_score": 45.148893,
+          "prediction_pct": 52.660297,
+          "ci_lower_pct": 52.346633,
+          "ci_upper_pct": 52.973751
+        },
+        {
+          "imd_score": 45.82386,
+          "prediction_pct": 52.673289,
+          "ci_lower_pct": 52.358461,
+          "ci_upper_pct": 52.987904
+        },
+        {
+          "imd_score": 46.498827,
+          "prediction_pct": 52.685457,
+          "ci_lower_pct": 52.369613,
+          "ci_upper_pct": 53.001085
+        },
+        {
+          "imd_score": 47.173794,
+          "prediction_pct": 52.696812,
+          "ci_lower_pct": 52.380095,
+          "ci_upper_pct": 53.013312
+        },
+        {
+          "imd_score": 47.848761,
+          "prediction_pct": 52.707366,
+          "ci_lower_pct": 52.389908,
+          "ci_upper_pct": 53.024606
+        },
+        {
+          "imd_score": 48.523728,
+          "prediction_pct": 52.717131,
+          "ci_lower_pct": 52.399055,
+          "ci_upper_pct": 53.034988
+        },
+        {
+          "imd_score": 49.198695,
+          "prediction_pct": 52.726118,
+          "ci_lower_pct": 52.407532,
+          "ci_upper_pct": 53.044483
+        },
+        {
+          "imd_score": 49.873662,
+          "prediction_pct": 52.734339,
+          "ci_lower_pct": 52.415337,
+          "ci_upper_pct": 53.053118
+        },
+        {
+          "imd_score": 50.548629,
+          "prediction_pct": 52.741805,
+          "ci_lower_pct": 52.422464,
+          "ci_upper_pct": 53.060921
+        },
+        {
+          "imd_score": 51.223596,
+          "prediction_pct": 52.748527,
+          "ci_lower_pct": 52.428905,
+          "ci_upper_pct": 53.067925
+        },
+        {
+          "imd_score": 51.898563,
+          "prediction_pct": 52.754518,
+          "ci_lower_pct": 52.434649,
+          "ci_upper_pct": 53.074161
+        },
+        {
+          "imd_score": 52.57353,
+          "prediction_pct": 52.759788,
+          "ci_lower_pct": 52.439687,
+          "ci_upper_pct": 53.079663
+        },
+        {
+          "imd_score": 53.248497,
+          "prediction_pct": 52.76435,
+          "ci_lower_pct": 52.444004,
+          "ci_upper_pct": 53.084468
+        },
+        {
+          "imd_score": 53.923464,
+          "prediction_pct": 52.768214,
+          "ci_lower_pct": 52.447586,
+          "ci_upper_pct": 53.088614
+        },
+        {
+          "imd_score": 54.598432,
+          "prediction_pct": 52.771393,
+          "ci_lower_pct": 52.450417,
+          "ci_upper_pct": 53.092139
+        },
+        {
+          "imd_score": 55.273399,
+          "prediction_pct": 52.773897,
+          "ci_lower_pct": 52.45248,
+          "ci_upper_pct": 53.095084
+        },
+        {
+          "imd_score": 55.948366,
+          "prediction_pct": 52.775738,
+          "ci_lower_pct": 52.453756,
+          "ci_upper_pct": 53.09749
+        },
+        {
+          "imd_score": 56.623333,
+          "prediction_pct": 52.776929,
+          "ci_lower_pct": 52.454227,
+          "ci_upper_pct": 53.099399
+        },
+        {
+          "imd_score": 57.2983,
+          "prediction_pct": 52.777479,
+          "ci_lower_pct": 52.453871,
+          "ci_upper_pct": 53.100853
+        },
+        {
+          "imd_score": 57.973267,
+          "prediction_pct": 52.777401,
+          "ci_lower_pct": 52.45267,
+          "ci_upper_pct": 53.101897
+        },
+        {
+          "imd_score": 58.648234,
+          "prediction_pct": 52.776706,
+          "ci_lower_pct": 52.450602,
+          "ci_upper_pct": 53.102573
+        },
+        {
+          "imd_score": 59.323201,
+          "prediction_pct": 52.775406,
+          "ci_lower_pct": 52.447649,
+          "ci_upper_pct": 53.102924
+        },
+        {
+          "imd_score": 59.998168,
+          "prediction_pct": 52.773512,
+          "ci_lower_pct": 52.443791,
+          "ci_upper_pct": 53.102991
+        },
+        {
+          "imd_score": 60.673135,
+          "prediction_pct": 52.771036,
+          "ci_lower_pct": 52.439009,
+          "ci_upper_pct": 53.102817
+        },
+        {
+          "imd_score": 61.348102,
+          "prediction_pct": 52.767988,
+          "ci_lower_pct": 52.433287,
+          "ci_upper_pct": 53.102441
+        },
+        {
+          "imd_score": 62.023069,
+          "prediction_pct": 52.764382,
+          "ci_lower_pct": 52.42661,
+          "ci_upper_pct": 53.101901
+        },
+        {
+          "imd_score": 62.698036,
+          "prediction_pct": 52.760227,
+          "ci_lower_pct": 52.418964,
+          "ci_upper_pct": 53.101233
+        },
+        {
+          "imd_score": 63.373003,
+          "prediction_pct": 52.755536,
+          "ci_lower_pct": 52.410338,
+          "ci_upper_pct": 53.100471
+        },
+        {
+          "imd_score": 64.047971,
+          "prediction_pct": 52.75032,
+          "ci_lower_pct": 52.400723,
+          "ci_upper_pct": 53.099647
+        },
+        {
+          "imd_score": 64.722938,
+          "prediction_pct": 52.74459,
+          "ci_lower_pct": 52.390115,
+          "ci_upper_pct": 53.098788
+        },
+        {
+          "imd_score": 65.397905,
+          "prediction_pct": 52.738358,
+          "ci_lower_pct": 52.37851,
+          "ci_upper_pct": 53.097922
+        },
+        {
+          "imd_score": 66.072872,
+          "prediction_pct": 52.731636,
+          "ci_lower_pct": 52.365909,
+          "ci_upper_pct": 53.09707
+        },
+        {
+          "imd_score": 66.747839,
+          "prediction_pct": 52.724434,
+          "ci_lower_pct": 52.352313,
+          "ci_upper_pct": 53.096253
+        },
+        {
+          "imd_score": 67.422806,
+          "prediction_pct": 52.716765,
+          "ci_lower_pct": 52.33773,
+          "ci_upper_pct": 53.095487
+        },
+        {
+          "imd_score": 68.097773,
+          "prediction_pct": 52.708639,
+          "ci_lower_pct": 52.322167,
+          "ci_upper_pct": 53.094788
+        },
+        {
+          "imd_score": 68.77274,
+          "prediction_pct": 52.700069,
+          "ci_lower_pct": 52.305636,
+          "ci_upper_pct": 53.094166
+        }
+      ]
+    },
+    {
+      "estimator": "SEM GMM",
+      "values": [
+        {
+          "imd_score": 1.951,
+          "prediction_pct": 51.657899,
+          "ci_lower_pct": 50.746765,
+          "ci_upper_pct": 52.567932
+        },
+        {
+          "imd_score": 2.625967,
+          "prediction_pct": 51.665627,
+          "ci_lower_pct": 50.75719,
+          "ci_upper_pct": 52.572964
+        },
+        {
+          "imd_score": 3.300934,
+          "prediction_pct": 51.673021,
+          "ci_lower_pct": 50.766623,
+          "ci_upper_pct": 52.578319
+        },
+        {
+          "imd_score": 3.975901,
+          "prediction_pct": 51.679988,
+          "ci_lower_pct": 50.77501,
+          "ci_upper_pct": 52.583866
+        },
+        {
+          "imd_score": 4.650868,
+          "prediction_pct": 51.686438,
+          "ci_lower_pct": 50.78231,
+          "ci_upper_pct": 52.589464
+        },
+        {
+          "imd_score": 5.325835,
+          "prediction_pct": 51.692278,
+          "ci_lower_pct": 50.788499,
+          "ci_upper_pct": 52.594952
+        },
+        {
+          "imd_score": 6.000802,
+          "prediction_pct": 51.697417,
+          "ci_lower_pct": 50.793563,
+          "ci_upper_pct": 52.600163
+        },
+        {
+          "imd_score": 6.675769,
+          "prediction_pct": 51.701763,
+          "ci_lower_pct": 50.797497,
+          "ci_upper_pct": 52.604916
+        },
+        {
+          "imd_score": 7.350737,
+          "prediction_pct": 51.705225,
+          "ci_lower_pct": 50.800303,
+          "ci_upper_pct": 52.609029
+        },
+        {
+          "imd_score": 8.025704,
+          "prediction_pct": 51.70771,
+          "ci_lower_pct": 50.801984,
+          "ci_upper_pct": 52.612315
+        },
+        {
+          "imd_score": 8.700671,
+          "prediction_pct": 51.709127,
+          "ci_lower_pct": 50.802542,
+          "ci_upper_pct": 52.614588
+        },
+        {
+          "imd_score": 9.375638,
+          "prediction_pct": 51.709384,
+          "ci_lower_pct": 50.801973,
+          "ci_upper_pct": 52.615669
+        },
+        {
+          "imd_score": 10.050605,
+          "prediction_pct": 51.70839,
+          "ci_lower_pct": 50.800265,
+          "ci_upper_pct": 52.615388
+        },
+        {
+          "imd_score": 10.725572,
+          "prediction_pct": 51.706053,
+          "ci_lower_pct": 50.797392,
+          "ci_upper_pct": 52.613587
+        },
+        {
+          "imd_score": 11.400539,
+          "prediction_pct": 51.702326,
+          "ci_lower_pct": 50.793347,
+          "ci_upper_pct": 52.61018
+        },
+        {
+          "imd_score": 12.075506,
+          "prediction_pct": 51.697351,
+          "ci_lower_pct": 50.788255,
+          "ci_upper_pct": 52.605325
+        },
+        {
+          "imd_score": 12.750473,
+          "prediction_pct": 51.691316,
+          "ci_lower_pct": 50.782264,
+          "ci_upper_pct": 52.599251
+        },
+        {
+          "imd_score": 13.42544,
+          "prediction_pct": 51.684409,
+          "ci_lower_pct": 50.77551,
+          "ci_upper_pct": 52.592196
+        },
+        {
+          "imd_score": 14.100407,
+          "prediction_pct": 51.676819,
+          "ci_lower_pct": 50.768127,
+          "ci_upper_pct": 52.584403
+        },
+        {
+          "imd_score": 14.775374,
+          "prediction_pct": 51.668733,
+          "ci_lower_pct": 50.760249,
+          "ci_upper_pct": 52.576115
+        },
+        {
+          "imd_score": 15.450341,
+          "prediction_pct": 51.66034,
+          "ci_lower_pct": 50.752017,
+          "ci_upper_pct": 52.567567
+        },
+        {
+          "imd_score": 16.125308,
+          "prediction_pct": 51.651828,
+          "ci_lower_pct": 50.743581,
+          "ci_upper_pct": 52.558985
+        },
+        {
+          "imd_score": 16.800276,
+          "prediction_pct": 51.643386,
+          "ci_lower_pct": 50.735104,
+          "ci_upper_pct": 52.550584
+        },
+        {
+          "imd_score": 17.475243,
+          "prediction_pct": 51.635202,
+          "ci_lower_pct": 50.726762,
+          "ci_upper_pct": 52.542564
+        },
+        {
+          "imd_score": 18.15021,
+          "prediction_pct": 51.627465,
+          "ci_lower_pct": 50.718743,
+          "ci_upper_pct": 52.535112
+        },
+        {
+          "imd_score": 18.825177,
+          "prediction_pct": 51.620362,
+          "ci_lower_pct": 50.711251,
+          "ci_upper_pct": 52.528401
+        },
+        {
+          "imd_score": 19.500144,
+          "prediction_pct": 51.614082,
+          "ci_lower_pct": 50.704502,
+          "ci_upper_pct": 52.522593
+        },
+        {
+          "imd_score": 20.175111,
+          "prediction_pct": 51.608813,
+          "ci_lower_pct": 50.698723,
+          "ci_upper_pct": 52.517837
+        },
+        {
+          "imd_score": 20.850078,
+          "prediction_pct": 51.604706,
+          "ci_lower_pct": 50.694105,
+          "ci_upper_pct": 52.514243
+        },
+        {
+          "imd_score": 21.525045,
+          "prediction_pct": 51.601739,
+          "ci_lower_pct": 50.690658,
+          "ci_upper_pct": 52.511757
+        },
+        {
+          "imd_score": 22.200012,
+          "prediction_pct": 51.599842,
+          "ci_lower_pct": 50.688331,
+          "ci_upper_pct": 52.510289
+        },
+        {
+          "imd_score": 22.874979,
+          "prediction_pct": 51.598942,
+          "ci_lower_pct": 50.687065,
+          "ci_upper_pct": 52.509757
+        },
+        {
+          "imd_score": 23.549946,
+          "prediction_pct": 51.598971,
+          "ci_lower_pct": 50.686794,
+          "ci_upper_pct": 52.510083
+        },
+        {
+          "imd_score": 24.224913,
+          "prediction_pct": 51.599855,
+          "ci_lower_pct": 50.687448,
+          "ci_upper_pct": 52.511197
+        },
+        {
+          "imd_score": 24.89988,
+          "prediction_pct": 51.601526,
+          "ci_lower_pct": 50.688951,
+          "ci_upper_pct": 52.513034
+        },
+        {
+          "imd_score": 25.574847,
+          "prediction_pct": 51.603912,
+          "ci_lower_pct": 50.691226,
+          "ci_upper_pct": 52.515529
+        },
+        {
+          "imd_score": 26.249815,
+          "prediction_pct": 51.606941,
+          "ci_lower_pct": 50.69419,
+          "ci_upper_pct": 52.518622
+        },
+        {
+          "imd_score": 26.924782,
+          "prediction_pct": 51.610544,
+          "ci_lower_pct": 50.697762,
+          "ci_upper_pct": 52.522253
+        },
+        {
+          "imd_score": 27.599749,
+          "prediction_pct": 51.614649,
+          "ci_lower_pct": 50.701859,
+          "ci_upper_pct": 52.526364
+        },
+        {
+          "imd_score": 28.274716,
+          "prediction_pct": 51.619186,
+          "ci_lower_pct": 50.706397,
+          "ci_upper_pct": 52.530897
+        },
+        {
+          "imd_score": 28.949683,
+          "prediction_pct": 51.624084,
+          "ci_lower_pct": 50.711294,
+          "ci_upper_pct": 52.535792
+        },
+        {
+          "imd_score": 29.62465,
+          "prediction_pct": 51.629271,
+          "ci_lower_pct": 50.716468,
+          "ci_upper_pct": 52.540989
+        },
+        {
+          "imd_score": 30.299617,
+          "prediction_pct": 51.634678,
+          "ci_lower_pct": 50.721839,
+          "ci_upper_pct": 52.546426
+        },
+        {
+          "imd_score": 30.974584,
+          "prediction_pct": 51.640232,
+          "ci_lower_pct": 50.72733,
+          "ci_upper_pct": 52.552041
+        },
+        {
+          "imd_score": 31.649551,
+          "prediction_pct": 51.645864,
+          "ci_lower_pct": 50.732862,
+          "ci_upper_pct": 52.557768
+        },
+        {
+          "imd_score": 32.324518,
+          "prediction_pct": 51.651502,
+          "ci_lower_pct": 50.738363,
+          "ci_upper_pct": 52.56354
+        },
+        {
+          "imd_score": 32.999485,
+          "prediction_pct": 51.657076,
+          "ci_lower_pct": 50.743761,
+          "ci_upper_pct": 52.569286
+        },
+        {
+          "imd_score": 33.674452,
+          "prediction_pct": 51.662515,
+          "ci_lower_pct": 50.748985,
+          "ci_upper_pct": 52.574935
+        },
+        {
+          "imd_score": 34.349419,
+          "prediction_pct": 51.66775,
+          "ci_lower_pct": 50.753971,
+          "ci_upper_pct": 52.580415
+        },
+        {
+          "imd_score": 35.024386,
+          "prediction_pct": 51.672751,
+          "ci_lower_pct": 50.758693,
+          "ci_upper_pct": 52.585691
+        },
+        {
+          "imd_score": 35.699354,
+          "prediction_pct": 51.677519,
+          "ci_lower_pct": 50.763158,
+          "ci_upper_pct": 52.590758
+        },
+        {
+          "imd_score": 36.374321,
+          "prediction_pct": 51.682057,
+          "ci_lower_pct": 50.767373,
+          "ci_upper_pct": 52.595616
+        },
+        {
+          "imd_score": 37.049288,
+          "prediction_pct": 51.686369,
+          "ci_lower_pct": 50.771345,
+          "ci_upper_pct": 52.600263
+        },
+        {
+          "imd_score": 37.724255,
+          "prediction_pct": 51.690455,
+          "ci_lower_pct": 50.775081,
+          "ci_upper_pct": 52.604696
+        },
+        {
+          "imd_score": 38.399222,
+          "prediction_pct": 51.69432,
+          "ci_lower_pct": 50.778586,
+          "ci_upper_pct": 52.608917
+        },
+        {
+          "imd_score": 39.074189,
+          "prediction_pct": 51.697965,
+          "ci_lower_pct": 50.781868,
+          "ci_upper_pct": 52.612923
+        },
+        {
+          "imd_score": 39.749156,
+          "prediction_pct": 51.701394,
+          "ci_lower_pct": 50.78493,
+          "ci_upper_pct": 52.616715
+        },
+        {
+          "imd_score": 40.424123,
+          "prediction_pct": 51.704609,
+          "ci_lower_pct": 50.787778,
+          "ci_upper_pct": 52.620294
+        },
+        {
+          "imd_score": 41.09909,
+          "prediction_pct": 51.707612,
+          "ci_lower_pct": 50.790417,
+          "ci_upper_pct": 52.623659
+        },
+        {
+          "imd_score": 41.774057,
+          "prediction_pct": 51.710407,
+          "ci_lower_pct": 50.792851,
+          "ci_upper_pct": 52.626812
+        },
+        {
+          "imd_score": 42.449024,
+          "prediction_pct": 51.712996,
+          "ci_lower_pct": 50.795085,
+          "ci_upper_pct": 52.629753
+        },
+        {
+          "imd_score": 43.123991,
+          "prediction_pct": 51.715382,
+          "ci_lower_pct": 50.797122,
+          "ci_upper_pct": 52.632485
+        },
+        {
+          "imd_score": 43.798958,
+          "prediction_pct": 51.717567,
+          "ci_lower_pct": 50.798966,
+          "ci_upper_pct": 52.635009
+        },
+        {
+          "imd_score": 44.473925,
+          "prediction_pct": 51.719554,
+          "ci_lower_pct": 50.800619,
+          "ci_upper_pct": 52.637327
+        },
+        {
+          "imd_score": 45.148893,
+          "prediction_pct": 51.721345,
+          "ci_lower_pct": 50.802086,
+          "ci_upper_pct": 52.639441
+        },
+        {
+          "imd_score": 45.82386,
+          "prediction_pct": 51.722944,
+          "ci_lower_pct": 50.803368,
+          "ci_upper_pct": 52.641355
+        },
+        {
+          "imd_score": 46.498827,
+          "prediction_pct": 51.724353,
+          "ci_lower_pct": 50.804469,
+          "ci_upper_pct": 52.64307
+        },
+        {
+          "imd_score": 47.173794,
+          "prediction_pct": 51.725574,
+          "ci_lower_pct": 50.80539,
+          "ci_upper_pct": 52.644589
+        },
+        {
+          "imd_score": 47.848761,
+          "prediction_pct": 51.726611,
+          "ci_lower_pct": 50.806134,
+          "ci_upper_pct": 52.645917
+        },
+        {
+          "imd_score": 48.523728,
+          "prediction_pct": 51.727465,
+          "ci_lower_pct": 50.806702,
+          "ci_upper_pct": 52.647056
+        },
+        {
+          "imd_score": 49.198695,
+          "prediction_pct": 51.72814,
+          "ci_lower_pct": 50.807097,
+          "ci_upper_pct": 52.64801
+        },
+        {
+          "imd_score": 49.873662,
+          "prediction_pct": 51.728638,
+          "ci_lower_pct": 50.807319,
+          "ci_upper_pct": 52.648783
+        },
+        {
+          "imd_score": 50.548629,
+          "prediction_pct": 51.728962,
+          "ci_lower_pct": 50.807371,
+          "ci_upper_pct": 52.649379
+        },
+        {
+          "imd_score": 51.223596,
+          "prediction_pct": 51.729115,
+          "ci_lower_pct": 50.807253,
+          "ci_upper_pct": 52.649801
+        },
+        {
+          "imd_score": 51.898563,
+          "prediction_pct": 51.729098,
+          "ci_lower_pct": 50.806965,
+          "ci_upper_pct": 52.650055
+        },
+        {
+          "imd_score": 52.57353,
+          "prediction_pct": 51.728916,
+          "ci_lower_pct": 50.80651,
+          "ci_upper_pct": 52.650144
+        },
+        {
+          "imd_score": 53.248497,
+          "prediction_pct": 51.728569,
+          "ci_lower_pct": 50.805888,
+          "ci_upper_pct": 52.650074
+        },
+        {
+          "imd_score": 53.923464,
+          "prediction_pct": 51.728062,
+          "ci_lower_pct": 50.805099,
+          "ci_upper_pct": 52.649848
+        },
+        {
+          "imd_score": 54.598432,
+          "prediction_pct": 51.727397,
+          "ci_lower_pct": 50.804144,
+          "ci_upper_pct": 52.649472
+        },
+        {
+          "imd_score": 55.273399,
+          "prediction_pct": 51.726576,
+          "ci_lower_pct": 50.803023,
+          "ci_upper_pct": 52.648951
+        },
+        {
+          "imd_score": 55.948366,
+          "prediction_pct": 51.725602,
+          "ci_lower_pct": 50.801736,
+          "ci_upper_pct": 52.64829
+        },
+        {
+          "imd_score": 56.623333,
+          "prediction_pct": 51.724478,
+          "ci_lower_pct": 50.800284,
+          "ci_upper_pct": 52.647493
+        },
+        {
+          "imd_score": 57.2983,
+          "prediction_pct": 51.723206,
+          "ci_lower_pct": 50.798667,
+          "ci_upper_pct": 52.646566
+        },
+        {
+          "imd_score": 57.973267,
+          "prediction_pct": 51.721789,
+          "ci_lower_pct": 50.796885,
+          "ci_upper_pct": 52.645515
+        },
+        {
+          "imd_score": 58.648234,
+          "prediction_pct": 51.72023,
+          "ci_lower_pct": 50.794938,
+          "ci_upper_pct": 52.644344
+        },
+        {
+          "imd_score": 59.323201,
+          "prediction_pct": 51.718531,
+          "ci_lower_pct": 50.792825,
+          "ci_upper_pct": 52.643059
+        },
+        {
+          "imd_score": 59.998168,
+          "prediction_pct": 51.716695,
+          "ci_lower_pct": 50.790546,
+          "ci_upper_pct": 52.641665
+        },
+        {
+          "imd_score": 60.673135,
+          "prediction_pct": 51.714724,
+          "ci_lower_pct": 50.788102,
+          "ci_upper_pct": 52.640168
+        },
+        {
+          "imd_score": 61.348102,
+          "prediction_pct": 51.712622,
+          "ci_lower_pct": 50.785492,
+          "ci_upper_pct": 52.638574
+        },
+        {
+          "imd_score": 62.023069,
+          "prediction_pct": 51.710391,
+          "ci_lower_pct": 50.782716,
+          "ci_upper_pct": 52.636888
+        },
+        {
+          "imd_score": 62.698036,
+          "prediction_pct": 51.708033,
+          "ci_lower_pct": 50.779774,
+          "ci_upper_pct": 52.635115
+        },
+        {
+          "imd_score": 63.373003,
+          "prediction_pct": 51.705551,
+          "ci_lower_pct": 50.776665,
+          "ci_upper_pct": 52.63326
+        },
+        {
+          "imd_score": 64.047971,
+          "prediction_pct": 51.702949,
+          "ci_lower_pct": 50.773389,
+          "ci_upper_pct": 52.631331
+        },
+        {
+          "imd_score": 64.722938,
+          "prediction_pct": 51.700227,
+          "ci_lower_pct": 50.769947,
+          "ci_upper_pct": 52.629331
+        },
+        {
+          "imd_score": 65.397905,
+          "prediction_pct": 51.69739,
+          "ci_lower_pct": 50.766336,
+          "ci_upper_pct": 52.627267
+        },
+        {
+          "imd_score": 66.072872,
+          "prediction_pct": 51.69444,
+          "ci_lower_pct": 50.762559,
+          "ci_upper_pct": 52.625144
+        },
+        {
+          "imd_score": 66.747839,
+          "prediction_pct": 51.691379,
+          "ci_lower_pct": 50.758614,
+          "ci_upper_pct": 52.622967
+        },
+        {
+          "imd_score": 67.422806,
+          "prediction_pct": 51.68821,
+          "ci_lower_pct": 50.754501,
+          "ci_upper_pct": 52.620742
+        },
+        {
+          "imd_score": 68.097773,
+          "prediction_pct": 51.684936,
+          "ci_lower_pct": 50.75022,
+          "ci_upper_pct": 52.618474
+        },
+        {
+          "imd_score": 68.77274,
+          "prediction_pct": 51.681559,
+          "ci_lower_pct": 50.745771,
+          "ci_upper_pct": 52.616169
+        }
+      ]
+    }
+  ]
+}

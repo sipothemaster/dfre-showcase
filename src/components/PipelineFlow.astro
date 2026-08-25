@@ -1,53 +1,6 @@
----
-const dataModel = [
-	{
-		family: 'Static coverage',
-		grain: 'Postcode × restaurant',
-		table: 'postcode_restaurant_delivery_map',
-		structure: 'delivery state · fee · minimum order · ETA · drive distance',
-		scale: '16,534,508 rows',
-	},
-	{
-		family: 'Restaurant profile',
-		grain: 'Restaurant',
-		table: 'restaurant_profile',
-		structure: 'name · location · cuisine · rating · platform URL',
-		scale: '100,850 rows',
-	},
-	{
-		family: 'Opening schedules',
-		grain: 'Restaurant × service × time',
-		table: 'restaurant_opening_times',
-		structure: 'local open/close time · timezone · cross-midnight flag',
-		scale: 'Normalised intervals',
-	},
-	{
-		family: 'Observed availability',
-		grain: 'Postcode × window × open restaurant',
-		table: 'restaurant_snapshots_temporal_snapshot_202606',
-		structure: 'planned/captured time · restaurant ID · live delivery attributes',
-		scale: '30,025,952 rows',
-	},
-	{
-		family: 'Direct grocery',
-		grain: 'Service × LSOA / Data Zone',
-		table: 'Standardised retailer availability',
-		structure: 'area code · Yes / No / Unknown · fast / scheduled delivery',
-		scale: '6 × 43,064 areas',
-	},
-	{
-		family: 'Spatial analysis',
-		grain: 'LSOA / Data Zone / MSOA',
-		table: 'area_delivery_coverage · delivery_analytics',
-		structure: 'count · density · share · population · deprivation · rurality',
-		scale: '43,064 / 6,856 areas',
-	},
-];
----
-
 <figure class="data-architecture compact-architecture" aria-labelledby="data-architecture-title">
 	<figcaption id="data-architecture-title" class="visually-hidden">
-		Representative-postcode design, reusable cloud collection, storage and analytical data model
+		Representative-postcode design, reusable cloud collection, storage and core delivery datasets
 	</figcaption>
 
 	<section class="architecture-band compact-workflow" aria-labelledby="workflow-title">
@@ -129,86 +82,60 @@ const dataModel = [
 
 		<section class="workflow-module relationship-module" aria-labelledby="relationship-module-title">
 			<header>
-				<p id="relationship-module-title">Platform data relationships</p>
+				<p id="relationship-module-title">Delivery data relationships</p>
 			</header>
-			<div class="relationship-map" aria-label="Representative postcodes branch into full and open-now restaurant coverage. Full coverage links to opening times; both coverage datasets link to restaurant profiles; open-now coverage is collected in four named windows.">
+			<div class="relationship-map" aria-label="Representative postcodes feed static restaurant coverage, observed open-now availability and direct grocery availability. Static coverage links to opening schedules and restaurant profiles; observed availability also links to restaurant profiles.">
 				<div class="relationship-canvas">
 					<div class="relationship-boundary" aria-hidden="true">
 						<span class="relationship-zone-label relationship-zone-static">Opening-hours-derived availability</span>
 						<span class="relationship-zone-label relationship-zone-observed">Observed open-now availability</span>
+						<span class="relationship-zone-label relationship-zone-grocery">Direct grocery availability</span>
 					</div>
 
-					<svg class="relationship-lines" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
+					<svg class="relationship-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
 						<defs>
 							<marker id="relationship-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
 								<path d="M0.75,0.75 L6,3.5 L0.75,6.25"></path>
 							</marker>
 						</defs>
-						<path d="M240 215 C278 215 260 85 300 85"></path>
-						<path d="M240 215 C278 215 260 250 300 250"></path>
-						<path d="M630 85 L690 85"></path>
-						<path d="M630 85 C670 85 645 250 690 250"></path>
-						<path d="M630 250 L690 250"></path>
-						<path d="M465 278 C465 300 465 306 465 322"></path>
+						<path d="M240 300 C278 300 260 90 300 90"></path>
+						<path d="M240 300 C278 300 260 275 300 275"></path>
+						<path d="M240 300 C278 300 260 490 300 490"></path>
+						<path d="M630 90 L690 90"></path>
+						<path d="M630 90 C670 90 645 275 690 275"></path>
+						<path d="M630 275 L690 275"></path>
 					</svg>
 
 					<article class="relationship-node relationship-postcode">
 						<strong>Representative postcodes</strong>
 					</article>
 					<article class="relationship-node relationship-full">
-						<strong>Full postcode–restaurant coverage</strong>
-						<code>postcode_restaurant_delivery_map</code>
+						<strong>Static coverage — Postcode × restaurant</strong>
+						<p class="relationship-scale">16,534,508 rows</p>
+						<p class="relationship-structure">Delivery state · fee · minimum order · ETA · drive distance</p>
 					</article>
 					<article class="relationship-node relationship-opening">
-						<strong>Restaurant opening times</strong>
-						<code>restaurant_opening_times</code>
+						<strong>Opening schedules — Restaurant × service × time</strong>
+						<p class="relationship-scale">Normalised opening intervals</p>
+						<p class="relationship-structure">Local open/close time · timezone · cross-midnight flag</p>
 					</article>
 					<article class="relationship-node relationship-live">
-						<strong>Open-now postcode–restaurant coverage</strong>
-						<code>temporal_snapshot_202606</code>
-					</article>
-					<article class="relationship-node relationship-windows">
-						<strong>Four predefined windows</strong>
-						<ul>
-							<li>Weekday afternoon</li>
-							<li>Weekday evening</li>
-							<li>Weekday early hours</li>
-							<li>Saturday peak</li>
-						</ul>
+						<strong>Observed availability — Postcode × collection window × open restaurant</strong>
+						<p class="relationship-scale">30,025,952 rows · Weekday afternoon · Weekday evening · Weekday early hours · Saturday peak</p>
+						<p class="relationship-structure">Window label · planned time · captured time · restaurant ID · live delivery attributes</p>
 					</article>
 					<article class="relationship-node relationship-profile">
-						<strong>Restaurant profile</strong>
-						<code>restaurant_profile</code>
+						<strong>Restaurant profile — Restaurant</strong>
+						<p class="relationship-scale">100,850 restaurants</p>
+						<p class="relationship-structure">Name · location · cuisine · rating · platform URL</p>
+					</article>
+					<article class="relationship-node relationship-grocery">
+						<strong>Direct grocery availability — Service × LSOA / Data Zone</strong>
+						<p class="relationship-scale">6 services × 43,064 areas</p>
+						<p class="relationship-structure">Area code · Yes / No / Unknown · fast / scheduled delivery</p>
 					</article>
 				</div>
 			</div>
 		</section>
-	</section>
-
-	<div class="architecture-connector" aria-hidden="true"><span>validated analytical tables</span></div>
-
-	<section class="architecture-band model-band" aria-labelledby="model-title">
-		<header class="architecture-band-header">
-			<p class="architecture-kicker" id="model-title">Data structure</p>
-		</header>
-
-		<div class="data-model-table" role="table" aria-label="Core analytical data structure">
-			<div class="data-model-row data-model-head" role="row">
-				<span role="columnheader">Dataset</span>
-				<span role="columnheader">Grain</span>
-				<span role="columnheader">Table / object</span>
-				<span role="columnheader">Core structure</span>
-				<span role="columnheader">Scale</span>
-			</div>
-			{dataModel.map((row) => (
-				<div class="data-model-row" role="row">
-					<strong role="cell">{row.family}</strong>
-					<span role="cell">{row.grain}</span>
-					<span role="cell"><code>{row.table}</code></span>
-					<span role="cell">{row.structure}</span>
-					<span role="cell">{row.scale}</span>
-				</div>
-			))}
-		</div>
 	</section>
 </figure>
