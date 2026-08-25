@@ -156,7 +156,7 @@
     ],
     "covariance": "HC3 robust",
     "confidence_level": 0.95,
-    "imd_range": "1st to 99th percentile of the continuous IMD 2025 score",
+    "imd_range": "official IMD deciles, evaluated at each decile's median continuous score",
     "reference_profile": {
       "ruc21nm": "Urban: Nearer to a major town or city",
       "region22nm": "South East",

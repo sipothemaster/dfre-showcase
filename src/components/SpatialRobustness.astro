@@ -8,35 +8,35 @@ const sem = data.curves.find((curve) => curve.estimator === 'SEM GMM')!;
 const chart = { width: 900, height: 430, left: 78, right: 24, top: 30, bottom: 76 };
 const plotWidth = chart.width - chart.left - chart.right;
 const plotHeight = chart.height - chart.top - chart.bottom;
-const allPoints = data.curves.flatMap((curve) => curve.values);
-const xMin = Math.min(...allPoints.map((point) => point.imd_score));
-const xMax = Math.max(...allPoints.map((point) => point.imd_score));
+const xMin = 1;
+const xMax = 10;
 const yMin = 49.5;
 const yMax = 53.5;
-const xTicks = [2, 20, 40, 60, 69];
+const xTicks = Array.from({ length: 10 }, (_, index) => index + 1);
 const yTicks = [50, 51, 52, 53];
 const x = (value: number) => chart.left + ((value - xMin) / (xMax - xMin)) * plotWidth;
 const y = (value: number) => chart.top + ((yMax - value) / (yMax - yMin)) * plotHeight;
 const linePath = (points: CurvePoint[], key: 'prediction_pct' | 'ci_lower_pct' | 'ci_upper_pct') =>
-	points.map((point, index) => `${index === 0 ? 'M' : 'L'}${x(point.imd_score).toFixed(2)},${y(point[key]).toFixed(2)}`).join(' ');
+	points.map((point, index) => `${index === 0 ? 'M' : 'L'}${x(point.imd_decile).toFixed(2)},${y(point[key]).toFixed(2)}`).join(' ');
 const ribbonPath = (points: CurvePoint[]) => {
 	const upper = linePath(points, 'ci_upper_pct');
 	const lower = [...points]
 		.reverse()
-		.map((point) => `L${x(point.imd_score).toFixed(2)},${y(point.ci_lower_pct).toFixed(2)}`)
+		.map((point) => `L${x(point.imd_decile).toFixed(2)},${y(point.ci_lower_pct).toFixed(2)}`)
 		.join(' ');
 	return `${upper} ${lower} Z`;
 };
+const signed = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixed(2)}`;
 ---
 
 <section class="spatial-robustness" id="spatial-robustness" aria-labelledby="spatial-robustness-title">
 	<header class="spatial-robustness-heading">
 		<div>
 			<p class="method-label">Spatial robustness</p>
-			<h3 id="spatial-robustness-title">The deprivation gradient weakens when residual spatial dependence is modelled.</h3>
+			<h3 id="spatial-robustness-title">The estimated deprivation gradient is sensitive to residual spatial dependence.</h3>
 		</div>
 		<p>
-			The adjusted non-spatial model retains strongly clustered residuals. A heteroskedastic GMM spatial error model tests whether the IMD association remains after representing correlated, unobserved spatial structure.
+			OLS residuals remain spatially clustered; the Rook SEM tests whether the adjusted IMD association persists after modelling correlated errors.
 		</p>
 	</header>
 
@@ -44,8 +44,7 @@ const ribbonPath = (points: CurvePoint[]) => {
 		<figure class="sem-comparison" aria-labelledby="sem-comparison-title">
 			<header class="sem-chart-heading">
 				<div>
-					<p class="method-label">Conditional fast-food composition</p>
-					<h4 id="sem-comparison-title">Non-spatial and Rook spatial-error estimates</h4>
+					<h4 id="sem-comparison-title">Adjusted fast-food share under OLS and Rook SEM</h4>
 				</div>
 				<div class="sem-legend" aria-label="Chart legend">
 					<span><i class="sem-key sem-key-ols"></i>OLS HC3</span>
@@ -55,8 +54,8 @@ const ribbonPath = (points: CurvePoint[]) => {
 
 			<div class="sem-chart-frame">
 				<svg viewBox={`0 0 ${chart.width} ${chart.height}`} role="img" aria-labelledby="sem-svg-title sem-svg-desc">
-					<title id="sem-svg-title">Adjusted fast-food share across IMD score under OLS and a Rook spatial error model</title>
-					<desc id="sem-svg-desc">The OLS estimate rises by approximately 2.26 percentage points, while the spatial error estimate remains almost flat. Shaded ribbons show 95 percent confidence intervals.</desc>
+					<title id="sem-svg-title">Adjusted fast-food share across official IMD deciles under OLS and a Rook spatial error model</title>
+					<desc id="sem-svg-desc">The OLS decile 1 minus decile 10 contrast is approximately {data.baseline.imd_change_percentage_points.toFixed(2)} percentage points, while the spatial error estimate remains almost flat. Shaded ribbons show 95 percent confidence intervals.</desc>
 
 					<g class="sem-grid">
 						{yTicks.map((tick) => (
@@ -77,16 +76,18 @@ const ribbonPath = (points: CurvePoint[]) => {
 					<path class="sem-ribbon sem-ribbon-rook" d={ribbonPath(sem.values)} />
 					<path class="sem-line sem-line-ols" d={linePath(ols.values, 'prediction_pct')} />
 					<path class="sem-line sem-line-rook" d={linePath(sem.values, 'prediction_pct')} />
+					{ols.values.map((point) => <circle class="sem-point sem-point-ols" cx={x(point.imd_decile)} cy={y(point.prediction_pct)} r="3.2" />)}
+					{sem.values.map((point) => <circle class="sem-point sem-point-rook" cx={x(point.imd_decile)} cy={y(point.prediction_pct)} r="3.2" />)}
 
 					<line class="sem-axis" x1={chart.left} x2={chart.width - chart.right} y1={chart.height - chart.bottom} y2={chart.height - chart.bottom} />
 					<line class="sem-axis" x1={chart.left} x2={chart.left} y1={chart.top} y2={chart.height - chart.bottom} />
-					<text class="sem-axis-label" x={chart.left + plotWidth / 2} y={chart.height - 16} text-anchor="middle">IMD score · higher values indicate greater deprivation</text>
+					<text class="sem-axis-label" x={chart.left + plotWidth / 2} y={chart.height - 16} text-anchor="middle">IMD decile · 1 = most deprived; 10 = least deprived</text>
 					<text class="sem-axis-label" transform={`translate(20 ${chart.top + plotHeight / 2}) rotate(-90)`} text-anchor="middle">Predicted fast-food share (%)</text>
 				</svg>
 			</div>
 
 			<figcaption>
-				Reference-profile predictions across the IMD-score 1st–99th percentile range. Shaded ribbons are pointwise 95% confidence intervals.
+				The continuous-score models are evaluated at the median IMD score within each official decile. Lines show adjusted predictions; ribbons show pointwise 95% confidence intervals.
 			</figcaption>
 		</figure>
 
@@ -102,25 +103,12 @@ const ribbonPath = (points: CurvePoint[]) => {
 				<small>{data.rook_sem.undirected_edges.toLocaleString('en-GB')} shared-boundary links</small>
 			</article>
 			<article class="sem-contrast-card">
-				<span>IMD 1st–99th percentile contrast</span>
-				<strong><b>+{data.baseline.imd_change_percentage_points.toFixed(2)}</b><i aria-hidden="true">→</i><b>+{data.rook_sem.imd_change_percentage_points.toFixed(2)} pp</b></strong>
+				<span>IMD decile 1 minus 10 contrast</span>
+				<strong><b>{signed(data.baseline.imd_change_percentage_points)}</b><i aria-hidden="true">→</i><b>{signed(data.rook_sem.imd_change_percentage_points)} pp</b></strong>
 				<small>OLS HC3 → Rook SEM</small>
 			</article>
-			<p>Filtered-innovation Moran’s I is {data.rook_sem.filtered_residual_morans_i.toFixed(3)}: much smaller, but still outside the permutation reference range. The SEM reduces spatial dependence without fully whitening the residuals.</p>
+			<p>Filtered innovations remain outside the permutation reference envelope (Moran’s I = {data.rook_sem.filtered_residual_morans_i.toFixed(3)}); spatial dependence is reduced but not eliminated.</p>
 		</aside>
 	</div>
 
-	<div class="network-sensitivity">
-		<div>
-			<p class="method-label">Alternative dependence structure</p>
-			<h4>Delivery-network similarity provides a second spatial weights design.</h4>
-		</div>
-		<p>
-			LSOAs are linked by the Jaccard similarity of their deliverable restaurant sets, using top-{data.network_sensitivity.top_k.join(', top-')} networks. These models also flatten the IMD contrast to {data.network_sensitivity.imd_change_range_percentage_points[0].toFixed(2)}–{data.network_sensitivity.imd_change_range_percentage_points[1].toFixed(2)} percentage points, but λ reaches {data.network_sensitivity.lambda_range[0].toFixed(2)}–{data.network_sensitivity.lambda_range[1].toFixed(2)} and prediction levels shift with network size. They are retained as exploratory sensitivity tests, not estimates of delivery spillovers.
-		</p>
-	</div>
-
-	<p class="robustness-conclusion">
-		<strong>Interpretation.</strong> The evidence supports strong spatial patterning in digital fast-food availability, but the independent deprivation gradient cannot yet be separated confidently from spatially structured market geography. This is specification sensitivity—not evidence that deprivation has no effect.
-	</p>
 </section>

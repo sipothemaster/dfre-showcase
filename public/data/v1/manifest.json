@@ -5,13 +5,13 @@
   "files": [
     {
       "path": "src/data/generated/core_analysis_summary.json",
-      "bytes": 4296,
-      "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
+      "bytes": 4313,
+      "sha256": "996fc69c34362149777822255d793bd2751a2e1a2aefd9bf7150e44a404e5ea0"
     },
     {
       "path": "public/data/v1/core_analysis_summary.json",
-      "bytes": 4296,
-      "sha256": "a1e8d1d4013205622b83dcf8da5cb1fcc1f8854ea74ea56ff2f529f96ef60ebe"
+      "bytes": 4313,
+      "sha256": "996fc69c34362149777822255d793bd2751a2e1a2aefd9bf7150e44a404e5ea0"
     },
     {
       "path": "src/data/generated/retailer_channel_summary.json",
@@ -30,8 +30,8 @@
     },
     {
       "path": "public/images/analysis/02_adjusted_imd_score_predictions.png",
-      "bytes": 195803,
-      "sha256": "0c7e84d5d84a5c51024e50120207c215e8daaee7c8583099bff7ceecad69f88e"
+      "bytes": 177198,
+      "sha256": "67ed5d9237b7147214f939db379f7852f563f553f797e28fecd0f7e8ad6bd0ad"
     },
     {
       "path": "src/data/generated/retailer_channel_summary_england.json",

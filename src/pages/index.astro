@@ -38,12 +38,13 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 				<p class="eyebrow">Digital food retail environment · Great Britain</p>
 				<h1>Mapping Britain's digital food environment</h1>
 				<p class="hero-deck">
-					An end-to-end spatial data project tracing how restaurant and grocery delivery vary across place—and what those patterns reveal about deprivation, rurality and population.
+					An end-to-end spatial data project tracing how restaurant and grocery delivery vary across place. The analysis examines how these spatial patterns relate to deprivation, rurality and population.
 				</p>
 				<div class="hero-tags" aria-label="Project disciplines">
 					<span>Data engineering</span>
 					<span>Spatial analysis</span>
-					<span>WebGIS</span>
+					<span>Spatial modelling</span>
+					<span>Data visualisation</span>
 				</div>
 				<div class="hero-actions">
 					<a class="primary-action" href={`${base}explore/`}>Explore the interactive map <span aria-hidden="true">→</span></a>
@@ -60,16 +61,6 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					</div>
 				))}
 			</aside>
-		</section>
-
-		<section class="opening-statement site-shell">
-			<div class="article-column">
-				<p class="section-kicker">The project</p>
-				<h2>Measuring how restaurant and grocery delivery availability varies across place.</h2>
-				<p>
-					The project integrates listings from a major digital delivery platform, standardised availability data from six major grocery services, and public demographic datasets to measure restaurant and grocery delivery availability across Great Britain. These sources are aligned within a common spatial framework across LSOAs, Data Zones and MSOAs, enabling geographic analysis of coverage and comparison between retailer-owned services and digital delivery platforms.
-				</p>
-			</div>
 		</section>
 
 		<section class="pipeline-section site-shell" id="pipeline">
@@ -106,8 +97,15 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 
 	</main>
 
-	<footer class="site-footer site-shell">
-		<p>Digital Food Retail Environment</p>
-		<p>Python · SQL · spatial analysis · reproducible research</p>
+	<footer class="site-footer site-shell" id="contact">
+		<div class="contact-identity">
+			<p>Contact</p>
+			<strong>Chenrui Xiao</strong>
+		</div>
+		<nav class="contact-links" aria-label="Contact links">
+			<a href="mailto:chenruix.job@gmail.com">chenruix.job@gmail.com</a>
+			<a href="https://www.linkedin.com/in/chenrui-xiao-940378205/" target="_blank" rel="me noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
+			<a href="https://github.com/sipothemaster" target="_blank" rel="me noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+		</nav>
 	</footer>
 </BaseLayout>
