@@ -2010,7 +2010,20 @@ h1 {
 
 .exposure-model {
 	display: grid;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
 	gap: clamp(3rem, 6vw, 5.5rem);
+}
+
+.exposure-model > *,
+.exposure-model-heading > *,
+.regression-figure-heading > *,
+.regression-specification,
+.regression-figure,
+.regression-image-frame {
+	min-width: 0;
+	max-width: 100%;
 }
 
 .exposure-model-heading,
@@ -2642,7 +2655,16 @@ h1 {
 	}
 
 	.regression-equation {
+		width: 100%;
+		max-width: 100%;
 		justify-content: flex-start;
+	}
+
+	.regression-image-frame {
+		width: 100%;
+		max-width: 100%;
+		overflow-x: auto;
+		overscroll-behavior-inline: contain;
 	}
 
 	.architecture-band-header {

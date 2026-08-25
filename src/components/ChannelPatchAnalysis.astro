@@ -1,7 +1,7 @@
 ---
 import patchAnalysis from '../data/generated/grocery_patch_analysis.json';
 
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const retailerColours: Record<string, string> = {
 	coop: '#4f8577',
 	sainsburys: '#446e9b',

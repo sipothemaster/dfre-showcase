@@ -1,7 +1,7 @@
 ---
 import englandSummary from '../data/generated/retailer_channel_summary_england.json';
 
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const maps = [
 	{
 		comparison: 'coop',
