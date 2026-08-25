@@ -5,6 +5,7 @@ import AnalysisFramework from '../components/AnalysisFramework.astro';
 import ChannelCoverageMaps from '../components/ChannelCoverageMaps.astro';
 import ChannelPatchAnalysis from '../components/ChannelPatchAnalysis.astro';
 import ExposureFindings from '../components/ExposureFindings.astro';
+import SpatialRobustness from '../components/SpatialRobustness.astro';
 
 const facts = [
 	{ value: '43k', label: 'LSOAs / Data Zones' },
@@ -95,10 +96,11 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 			<div class="site-shell">
 				<div class="editorial-intro">
 					<p class="section-kicker">Finding 02 · Inequality in available food choice</p>
-					<h2>More deprived areas have greater digital fast-food exposure, while rural markets have far fewer available options.</h2>
-					<p>Count, population-standardised density and fast-food share capture different dimensions of exposure. Adjusted estimates remain higher at greater deprivation across all three measures, while the rural–urban contrast is strongest for the breadth of available restaurants. These are area-level associations, not evidence of platform targeting or consumption.</p>
+					<h2>Fast-food exposure varies with deprivation and rurality, but the estimated deprivation gradient is spatially sensitive.</h2>
+					<p>Count, population-standardised density and fast-food share capture different dimensions of exposure. Adjusted non-spatial models retain a positive deprivation gradient, while the rural–urban contrast is strongest for the breadth of available restaurants. Spatial error sensitivities substantially weaken the IMD gradient, so it is treated as model-dependent rather than a definitive independent effect.</p>
 				</div>
 				<ExposureFindings />
+				<SpatialRobustness />
 			</div>
 		</section>
 
