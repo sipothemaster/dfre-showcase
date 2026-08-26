@@ -175,6 +175,49 @@ h1 {
 	text-underline-offset: 0.28rem;
 }
 
+.hero-code-links {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	align-items: baseline;
+	gap: 0.55rem 1.25rem;
+	max-width: 43rem;
+	margin-top: 1.4rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--line);
+	font-family: 'DM Sans', Arial, sans-serif;
+	font-size: 0.76rem;
+}
+
+.hero-code-links > span {
+	color: var(--focus-dark);
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.hero-code-links > span:first-child {
+	grid-row: 1 / span 2;
+}
+
+.hero-code-links > .hero-code-item {
+	grid-column: 2;
+	color: var(--muted);
+	font-weight: 400;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.hero-code-item a {
+	color: var(--muted);
+	text-decoration-color: var(--line-dark);
+	text-underline-offset: 0.24rem;
+}
+
+.hero-code-item a:hover,
+.hero-code-item a:focus-visible {
+	color: var(--focus-dark);
+}
+
 .scale-note {
 	align-self: end;
 	border-top: 2px solid var(--ink);
@@ -1543,6 +1586,19 @@ h1 {
 	stroke-linejoin: round;
 	stroke-width: 3;
 	vector-effect: non-scaling-stroke;
+}
+
+.repository-reference {
+	margin: 0;
+	color: var(--muted);
+	font-family: 'DM Sans', Arial, sans-serif;
+	font-size: 0.68rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.repository-reference .repository-link {
+	font-size: inherit;
 }
 
 .density-endpoint {
