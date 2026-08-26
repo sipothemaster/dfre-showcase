@@ -394,18 +394,7 @@ function clearSelection() {
 
 const map = new Map({
 	container: 'map',
-	style: {
-		version: 8,
-		sources: {
-			carto: {
-				type: 'raster',
-				tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'],
-				tileSize: 256,
-				attribution: '© OpenStreetMap contributors © CARTO',
-			},
-		},
-		layers: [{ id: 'carto', type: 'raster', source: 'carto', paint: { 'raster-opacity': 0.72 } }],
-	},
+	style: 'https://tiles.openfreemap.org/styles/positron',
 	center: [-3.2, 54.7],
 	zoom: 4.4,
 	minZoom: 4,
