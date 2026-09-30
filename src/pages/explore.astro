@@ -1,96 +1,262 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import haspLogo from '../assets/brand/hasp/hasp-data-service.png';
+import '../styles/explorer-hasp.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 ---
 
 <BaseLayout
-	title="Explore the data · DFRE"
-	description="Explore restaurant, fast-food and grocery delivery indicators across Great Britain."
+	title="Delivery availability explorer · HASP Data Service"
+	description="Explore area-level restaurant, fast-food and grocery delivery indicators across Great Britain."
 >
-	<main id="main-content" class="explorer-page" data-base={base}>
+	<main id="main-content" class="explorer-page hasp-explorer" data-base={base}>
 		<header class="explorer-header">
-			<div>
-				<a class="wordmark" href={base}>DFRE / Interactive explorer</a>
-				<h1>Explore the delivery market</h1>
+			<div class="explorer-brand-copy">
+				<h1>Delivery availability explorer</h1>
+				<p>Area-level delivery indicators across Great Britain</p>
 			</div>
-			<p>Area-level indicators · Great Britain · representative-postcode design</p>
+			<a
+				class="hasp-brand-link"
+				href="https://hasp.ac.uk/"
+				target="_blank"
+				rel="noreferrer"
+				aria-label="Healthy and Sustainable Places Data Service website"
+			>
+				<img src={haspLogo.src} width="180" height="52" alt="Healthy and Sustainable Places Data Service" />
+			</a>
 		</header>
 
 		<div class="explorer-workspace">
-			<aside class="explorer-controls" aria-label="Map controls">
-				<div class="explorer-control-group">
-					<label for="map-metric">Map metric</label>
-					<select id="map-metric">
-						<option value="r">Deliverable restaurants</option>
-						<option value="ff">Fast-food restaurants</option>
-						<option value="ffs">Fast-food share</option>
-						<option value="g">Grocery listings</option>
-						<option value="open">Scheduled open restaurants</option>
-						<option value="co">Co-op channel</option>
-						<option value="mo">Morrisons fast channel</option>
-						<option value="sa">Sainsbury's fast channel</option>
-						<option value="ic">Iceland channel</option>
-					</select>
-				</div>
-
-				<div class="temporal-controls" id="temporal-controls" hidden>
-					<div class="explorer-control-group">
-						<label for="temporal-day">Day</label>
-						<select id="temporal-day">
-							<option value="Monday">Monday</option>
-							<option value="Tuesday">Tuesday</option>
-							<option value="Wednesday">Wednesday</option>
-							<option value="Thursday">Thursday</option>
-							<option value="Friday" selected>Friday</option>
-							<option value="Saturday">Saturday</option>
-							<option value="Sunday">Sunday</option>
-						</select>
+			<aside class="explorer-controls" aria-label="Explorer controls">
+				<section class="explorer-sidebar-section explorer-view-switch" aria-labelledby="view-heading">
+					<h2 id="view-heading" class="explorer-sidebar-label">View</h2>
+					<p class="explorer-sidebar-help">Choose how to explore the data.</p>
+					<div class="explorer-view-options" role="tablist" aria-label="Explorer view">
+						<button
+							id="view-map-button"
+							class="explorer-view-option is-selected"
+							type="button"
+							role="tab"
+							aria-selected="true"
+							aria-controls="explorer-map-view"
+							data-explorer-view="map"
+						>
+							<span class="view-radio" aria-hidden="true"></span>
+							Explore map
+						</button>
+						<button
+							id="view-about-button"
+							class="explorer-view-option"
+							type="button"
+							role="tab"
+							aria-selected="false"
+							aria-controls="explorer-about-view"
+							data-explorer-view="about"
+						>
+							<span class="view-radio" aria-hidden="true"></span>
+							About the data
+						</button>
 					</div>
+				</section>
 
-					<div class="explorer-control-group temporal-hour-control">
-						<div class="temporal-hour-label">
-							<label for="temporal-hour">Hour</label>
-							<output id="temporal-hour-output" for="temporal-hour">20:00</output>
+				<div id="map-control-groups">
+					<section class="explorer-sidebar-section" aria-labelledby="metric-heading">
+						<h2 id="metric-heading" class="explorer-sidebar-label">Map metric</h2>
+						<p class="explorer-sidebar-help">Select the delivery measure to display.</p>
+						<div class="explorer-control-group">
+							<label for="map-metric">Indicator</label>
+							<select id="map-metric">
+								<option value="r">Deliverable restaurants</option>
+								<option value="ff">Fast-food restaurants</option>
+								<option value="ffs">Fast-food share</option>
+								<option value="g">Grocery listings</option>
+								<option value="open">Scheduled open restaurants</option>
+								<option value="co">Co-op channel</option>
+								<option value="mo">Morrisons fast channel</option>
+								<option value="sa">Sainsbury's fast channel</option>
+								<option value="ic">Iceland channel</option>
+							</select>
 						</div>
-						<input id="temporal-hour" type="range" min="0" max="23" step="1" value="20" />
-						<div class="temporal-hour-scale" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+
+						<div class="temporal-controls" id="temporal-controls" hidden>
+							<div class="explorer-control-group">
+								<label for="temporal-day">Day</label>
+								<select id="temporal-day">
+									<option value="Monday">Monday</option>
+									<option value="Tuesday">Tuesday</option>
+									<option value="Wednesday">Wednesday</option>
+									<option value="Thursday">Thursday</option>
+									<option value="Friday" selected>Friday</option>
+									<option value="Saturday">Saturday</option>
+									<option value="Sunday">Sunday</option>
+								</select>
+							</div>
+
+							<div class="explorer-control-group temporal-hour-control">
+								<div class="temporal-hour-label">
+									<label for="temporal-hour">Hour</label>
+									<output id="temporal-hour-output" for="temporal-hour">20:00</output>
+								</div>
+								<input id="temporal-hour" type="range" min="0" max="23" step="1" value="20" />
+								<div class="temporal-hour-scale" aria-hidden="true"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+							</div>
+						</div>
+					</section>
+
+					<section class="explorer-sidebar-section" aria-labelledby="geography-heading">
+						<h2 id="geography-heading" class="explorer-sidebar-label">Geography</h2>
+						<p class="explorer-sidebar-help">Choose a local authority for small-area detail.</p>
+						<div class="explorer-control-group">
+							<label for="lad-search">Local authority</label>
+							<select id="lad-search" disabled>
+								<option value="">Loading areas…</option>
+							</select>
+						</div>
+						<button id="clear-area" class="explorer-secondary-button" type="button" disabled>Return to Great Britain</button>
+					</section>
+
+					<section class="explorer-sidebar-section explorer-legend-section" aria-labelledby="legend-heading">
+						<h2 id="legend-heading" class="explorer-sidebar-label">Legend</h2>
+						<div class="map-legend" id="map-legend" aria-live="polite"></div>
+						<p class="explorer-instruction">At national scale, colours summarise local-authority values. Select an area to load LSOA or Data Zone detail.</p>
+					</section>
+				</div>
+			</aside>
+
+			<section
+				id="explorer-map-view"
+				class="explorer-main-view"
+				role="tabpanel"
+				aria-labelledby="view-map-button"
+			>
+				<div class="explorer-map-heading">
+					<div>
+						<p class="explorer-main-kicker">Interactive map</p>
+						<h2>Explore delivery availability</h2>
 					</div>
+					<p>Great Britain · representative-postcode design</p>
 				</div>
 
-				<div class="explorer-control-group">
-					<label for="lad-search">Find a local authority</label>
-					<select id="lad-search" disabled>
-						<option value="">Loading areas…</option>
-					</select>
+				<div class="map-panel">
+					<div class="map-frame">
+						<div id="map" aria-label="Interactive map of delivery availability"></div>
+						<div class="map-loading" id="map-loading" role="status">Loading map data…</div>
+					</div>
+
+					<aside class="area-profile" id="area-profile" aria-live="polite">
+						<p class="profile-kicker">Great Britain overview</p>
+						<h2>Select a local authority</h2>
+						<p>Click the map or use the area selector to load small-area detail and exact values.</p>
+						<div class="profile-method">
+							<strong>How to read this map</strong>
+							<p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA or Data Zone values and retailer channel states.</p>
+						</div>
+					</aside>
+				</div>
+			</section>
+
+			<section
+				id="explorer-about-view"
+				class="explorer-main-view explorer-about-view"
+				role="tabpanel"
+				aria-labelledby="view-about-button"
+				hidden
+			>
+				<div class="about-intro">
+					<p class="explorer-main-kicker">About the data</p>
+					<h2>What this explorer shows</h2>
+					<p class="about-lead">The explorer describes delivery availability observed for representative postcodes across small areas in Great Britain. It brings restaurant, fast-food, grocery and selected retailer-channel measures into one interface.</p>
+					<p>Values describe the delivery market captured by the underlying collection and area design. They should not be interpreted as complete address-level coverage or as a direct measure of food consumption.</p>
 				</div>
 
-				<button id="clear-area" type="button" disabled>Return to Great Britain</button>
+				<hr />
 
-				<div class="map-legend" id="map-legend" aria-live="polite"></div>
+				<section aria-labelledby="measure-heading">
+					<h3 id="measure-heading">Measures in the map</h3>
+					<div class="about-card-grid">
+						<article class="about-card">
+							<h4>Restaurant availability</h4>
+							<p>Deliverable restaurants, fast-food restaurants and fast-food share summarise the listings observed for each representative postcode market.</p>
+						</article>
+						<article class="about-card">
+							<h4>Grocery availability</h4>
+							<p>Grocery listings and retailer-channel states show observed platform listings and how they compare with selected retailer-operated services.</p>
+						</article>
+						<article class="about-card">
+							<h4>Scheduled availability</h4>
+							<p>The day and hour control shows restaurants scheduled to be open at the selected time, based on the imported opening-time cache.</p>
+						</article>
+						<article class="about-card">
+							<h4>Geographic detail</h4>
+							<p>The national view summarises local authorities. Selecting one loads its LSOA or Data Zone polygons and exact area values.</p>
+						</article>
+					</div>
+				</section>
 
-				<p class="explorer-instruction">Select a local authority to load its LSOA or Data Zone polygons. Metric changes are applied in the browser.</p>
-			</aside>
+				<hr />
 
-			<div class="map-frame">
-				<div id="map" aria-label="Interactive map of delivery availability"></div>
-				<div class="map-loading" id="map-loading" role="status">Loading map data…</div>
-			</div>
+				<section aria-labelledby="pipeline-heading">
+					<h3 id="pipeline-heading">From collection to public map</h3>
+					<div class="about-pipeline" aria-label="Data pipeline summary">
+						<div><span>01</span><strong>Collect</strong><p>Platform and retailer availability are collected in their source repositories.</p></div>
+						<div><span>02</span><strong>Validate</strong><p>Area keys, classifications and analytical definitions are checked by their owning projects.</p></div>
+						<div><span>03</span><strong>Import</strong><p>Validated exports and existing map caches are converted into versioned presentation assets.</p></div>
+						<div><span>04</span><strong>Present</strong><p>This Astro site renders the map without refitting models or redefining results.</p></div>
+					</div>
+				</section>
 
-			<aside class="area-profile" id="area-profile" aria-live="polite">
-				<p class="profile-kicker">Great Britain overview</p>
-				<h2>Select a local authority</h2>
-				<p>Click the map or use the area selector to load small-area detail and exact values.</p>
-				<div class="profile-method">
-					<strong>How to read this map</strong>
-					<p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA/Data Zone values or retailer channel states.</p>
+				<hr />
+
+				<div class="about-notes-grid">
+					<section aria-labelledby="limits-heading">
+						<h3 id="limits-heading">Interpretation and limitations</h3>
+						<ul>
+							<li>Availability is observed at representative postcodes and may vary within an area.</li>
+							<li>Platform listings and retailer-operated channels are distinct observations.</li>
+							<li>Scheduled opening reflects recorded opening-time information for the selected snapshot.</li>
+							<li>Missing and unresolved retailer states remain separate where required by the source contract.</li>
+						</ul>
+					</section>
+					<section aria-labelledby="sources-heading">
+						<h3 id="sources-heading">Methods and sources</h3>
+						<p>The collection pipeline, analytical definitions and public presentation layer are maintained separately so that the explorer does not silently alter validated results.</p>
+						<a class="about-primary-link" href={`${base}#pipeline`}>Read the full methods and pipeline <span aria-hidden="true">→</span></a>
+					</section>
 				</div>
-			</aside>
+			</section>
 		</div>
 	</main>
 
 	<script>
 		import '../scripts/explorer';
+
+		const viewButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-explorer-view]'));
+		const mapView = document.querySelector<HTMLElement>('#explorer-map-view');
+		const aboutView = document.querySelector<HTMLElement>('#explorer-about-view');
+		const mapControlGroups = document.querySelector<HTMLElement>('#map-control-groups');
+
+		function selectExplorerView(view: 'map' | 'about') {
+			viewButtons.forEach((button) => {
+				const selected = button.dataset.explorerView === view;
+				button.classList.toggle('is-selected', selected);
+				button.setAttribute('aria-selected', String(selected));
+			});
+
+			if (mapView) mapView.hidden = view !== 'map';
+			if (aboutView) aboutView.hidden = view !== 'about';
+			if (mapControlGroups) mapControlGroups.hidden = view !== 'map';
+
+			if (view === 'map') {
+				requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+			}
+		}
+
+		viewButtons.forEach((button) => {
+			button.addEventListener('click', () => {
+				selectExplorerView(button.dataset.explorerView === 'about' ? 'about' : 'map');
+			});
+		});
 	</script>
 </BaseLayout>
