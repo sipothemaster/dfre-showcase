@@ -68,19 +68,18 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<div class="explorer-control-group">
 							<label for="map-metric">Indicator</label>
 							<select id="map-metric">
-								<option value="r">Deliverable restaurants</option>
+								<option value="open" selected>Opening deliverable restaurants</option>
+								<option value="r">Total deliverable restaurants</option>
 								<option value="ff">Fast-food restaurants</option>
 								<option value="ffs">Fast-food share</option>
 								<option value="g">Grocery listings</option>
-								<option value="open">Scheduled open restaurants</option>
 								<option value="co">Co-op channel</option>
 								<option value="mo">Morrisons fast channel</option>
 								<option value="sa">Sainsbury's fast channel</option>
-								<option value="ic">Iceland channel</option>
 							</select>
 						</div>
 
-						<div class="temporal-controls" id="temporal-controls" hidden>
+						<div class="temporal-controls" id="temporal-controls">
 							<div class="explorer-control-group">
 								<label for="temporal-day">Day</label>
 								<select id="temporal-day">
@@ -178,7 +177,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					<div class="about-card-grid">
 						<article class="about-card">
 							<h4>Restaurant availability</h4>
-							<p>Deliverable restaurants, fast-food restaurants and fast-food share summarise the listings observed for each representative postcode market.</p>
+							<p>Total deliverable restaurants counts distinct restaurants available for delivery and excludes retail and non-restaurant listings. Fast food includes the original 13 tags plus Chinese, Indian and Desserts; any matching tag qualifies after retail exclusions. Fast-food share divides these outlets by total deliverable restaurants.</p>
 						</article>
 						<article class="about-card">
 							<h4>Grocery availability</h4>
@@ -186,11 +185,11 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						</article>
 						<article class="about-card">
 							<h4>Scheduled availability</h4>
-							<p>The day and hour control shows restaurants scheduled to be open at the selected time, based on the imported opening-time cache.</p>
+							<p>Opening deliverable restaurants counts restaurants scheduled open for delivery at the selected day and hour start. Recorded schedules are used across all seven days; outlets with missing schedules are not confirmed closed.</p>
 						</article>
 						<article class="about-card">
 							<h4>Geographic detail</h4>
-							<p>The national view summarises local authorities. Selecting one loads its LSOA or Data Zone polygons and exact area values.</p>
+							<p>The national view uses small-area median restaurant and grocery counts. Fast-food share pools fast-food and total restaurant delivery opportunities across those areas. Selecting a local authority loads its LSOA or Data Zone polygons and exact area values.</p>
 						</article>
 					</div>
 				</section>

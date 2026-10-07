@@ -62,7 +62,6 @@ const channelLabels: Record<string, string> = {
 	co: 'Co-op',
 	mo: 'Morrisons fast',
 	sa: "Sainsbury's fast",
-	ic: 'Iceland',
 };
 const channelColors = ['#203c39', '#8f897e', '#b6412f', '#ddd8cc', '#6f6b63'];
 const continuousColors = ['#e4e0d5', '#b9cbc5', '#77a59c', '#2f7069', '#173f3c'];
@@ -89,6 +88,7 @@ function escapeHTML(value: unknown): string {
 }
 
 function formatNumber(value: unknown, digits = 0): string {
+	if (value === null || value === undefined || value === '') return 'Not available';
 	const number = Number(value);
 	return Number.isFinite(number)
 		? number.toLocaleString('en-GB', { maximumFractionDigits: digits })
@@ -96,6 +96,7 @@ function formatNumber(value: unknown, digits = 0): string {
 }
 
 function formatPercent(value: unknown, inputIsShare = false): string {
+	if (value === null || value === undefined || value === '') return 'Not available';
 	const number = Number(value);
 	if (!Number.isFinite(number)) return 'Not available';
 	return `${(inputIsShare ? number * 100 : number).toFixed(1)}%`;
@@ -302,7 +303,7 @@ function parentProfile(properties: Record<string, unknown>) {
 		<h2>${escapeHTML(properties.name)}</h2>
 		<p>${formatNumber(properties.n)} LSOA/Data Zone markets · population ${formatNumber(properties.pop)}</p>
 		<dl class="profile-values">
-			<div><dt>Median restaurants</dt><dd>${formatNumber(properties.r, 1)}</dd></div>
+			<div><dt>Median total deliverable restaurants</dt><dd>${formatNumber(properties.r, 1)}</dd></div>
 			<div><dt>Median fast food</dt><dd>${formatNumber(properties.ff, 1)}</dd></div>
 			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
 			<div><dt>Median grocery listings</dt><dd>${formatNumber(properties.g, 1)}</dd></div>
@@ -317,10 +318,11 @@ function childProfile(properties: Record<string, unknown>) {
 		<h2>${escapeHTML(properties.name)}</h2>
 		<p>${escapeHTML(properties.id)} · population ${formatNumber(properties.pop)}</p>
 		<dl class="profile-values">
-			<div><dt>Deliverable restaurants</dt><dd>${formatNumber(properties.r)}</dd></div>
+			<div><dt>Total deliverable restaurants</dt><dd>${formatNumber(properties.r)}</dd></div>
 			<div><dt>Fast-food restaurants</dt><dd>${formatNumber(properties.ff)}</dd></div>
 			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
 			<div><dt>Grocery listings</dt><dd>${formatNumber(properties.g)}</dd></div>
+			<div><dt>Restaurants with unknown schedules</dt><dd>${formatNumber(properties.schedule_unknown)}</dd></div>
 		</dl>
 		<div class="profile-channels">
 			${Object.entries(channelLabels).map(([key, label]) => `<p><span>${escapeHTML(label)}</span><strong>${escapeHTML(manifest.channel_codes[String(properties[key])])}</strong></p>`).join('')}
@@ -410,6 +412,7 @@ map.on('load', async () => {
 			fetch(`${base}map/v1/manifest.json`).then((response) => response.json()),
 			fetch(`${base}map/v1/parents.geojson`).then((response) => response.json()),
 		]);
+		if (currentMetric() === 'open') await ensureTemporalManifest();
 		map.addSource('parents', { type: 'geojson', data: parents as never, promoteId: 'id' });
 		map.addLayer({
 			id: 'parents-fill',
@@ -431,7 +434,7 @@ map.on('load', async () => {
 			.join('');
 		areaSelect.innerHTML = `<option value="">Choose an area</option>${options}`;
 		areaSelect.disabled = false;
-		updateLegend();
+		await selectMetric();
 		loading.hidden = true;
 	} catch (error) {
 		loading.textContent = 'The map data could not be loaded.';

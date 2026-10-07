@@ -104,8 +104,8 @@ const signed = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixed(2)}`;
 			</article>
 			<article class="sem-contrast-card">
 				<span>IMD decile 1 minus 10 contrast</span>
-				<strong><b>{signed(data.baseline.imd_change_percentage_points)}</b><i aria-hidden="true">→</i><b>{signed(data.rook_sem.imd_change_percentage_points)} pp</b></strong>
-				<small>OLS HC3 → Rook SEM</small>
+				<strong aria-label="Absolute difference in predicted fast-food share, in percentage points"><b>{signed(data.baseline.imd_change_percentage_points)}%</b><i aria-hidden="true">→</i><b>{signed(data.rook_sem.imd_change_percentage_points)}%</b></strong>
+				<small>OLS HC3 → Rook SEM · absolute share difference</small>
 			</article>
 			<p>Filtered innovations remain outside the permutation reference envelope (Moran’s I = {data.rook_sem.filtered_residual_morans_i.toFixed(3)}); spatial dependence is reduced but not eliminated.</p>
 		</aside>

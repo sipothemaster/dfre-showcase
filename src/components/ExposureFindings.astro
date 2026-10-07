@@ -13,13 +13,13 @@ const regressionFigure = `${base.replace(/\/$/, '')}/images/analysis/02_adjusted
 		<div
 			class="regression-equation"
 			role="math"
-			aria-label="Outcome-specific link of expected exposure equals an intercept, a spline of IMD score, rural urban class, log population density and region"
+			aria-label="Exposure outcome equals an intercept, a spline of IMD score, rural urban class, log population density and region"
 		>
-			<span><i>g</i><sub>k</sub>(E[<i>Y</i><sub>ik</sub> | <i>X</i><sub>i</sub>])</span>
+			<span><i>Y</i><sub>ik</sub></span>
 			<b>=</b>
 			<span><i>β</i><sub>0k</sub> + <i>s</i><sub>k</sub>(IMD<sub>i</sub>) + <i>γ</i><sub>k</sub>RUC<sub>i</sub> + <i>β</i><sub>1k</sub>log(1 + population density<sub>i</sub>) + <i>δ</i><sub>k</sub>region<sub>i</sub></span>
 		</div>
-		<p class="regression-symbols"><i>i</i>: England LSOA · <i>k</i>: exposure measure · <i>X</i><sub>i</sub>: covariates · <i>g</i><sub>k</sub>: outcome-specific link · <i>s</i><sub>k</sub>: IMD spline · RUC<sub>i</sub>: rural–urban class</p>
+		<p class="regression-symbols"><i>i</i>: England LSOA · <i>k</i>: exposure measure · <i>Y</i><sub>ik</sub>: exposure outcome · <i>s</i><sub>k</sub>: IMD spline · RUC<sub>i</sub>: rural–urban class</p>
 
 		<div class="regression-model-grid">
 			{model.models.map((entry) => (

@@ -55,9 +55,10 @@ def quantile_breaks(values: list[np.ndarray]) -> list[float]:
     ]
 
 
-def build_temporal_assets(dashboard_root: Path, output_root: Path) -> dict:
-    area_root = dashboard_root / "data" / "cache" / "opening_by_hour"
-    parent_root = dashboard_root / "data" / "cache" / "parent_opening_by_hour"
+def build_temporal_assets(dashboard_root: Path, output_root: Path, cache_directory: Path | None = None) -> dict:
+    cache = cache_directory or dashboard_root / "data/cache/nutrition_society_v2"
+    area_root = cache / "opening_by_hour"
+    parent_root = cache / "parent_opening_by_hour"
     if not area_root.exists() or not parent_root.exists():
         raise FileNotFoundError("Dash scheduled opening-time caches were not found")
 
@@ -117,9 +118,10 @@ def build_temporal_assets(dashboard_root: Path, output_root: Path) -> dict:
 
     manifest = {
         "metric": "open_restaurant_count",
-        "label": "Scheduled open restaurants",
+        "label": "Opening deliverable restaurants",
         "parent_label": "Median open per small area",
-        "semantics": "Derived from delivery opening intervals; not observed open-now availability.",
+        "semantics": "Distinct deliverable non-retail restaurants with a recorded delivery interval open at the hour start; missing schedules are unknown, not confirmed closed. Not observed open-now availability.",
+        "source_contract": json.loads((cache / "source_contract.json").read_text(encoding="utf-8")),
         "days": DAYS,
         "hours": HOURS,
         "default_day": "Friday",
@@ -148,12 +150,13 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=showcase_root / "public" / "map" / "v1" / "temporal",
     )
+    parser.add_argument("--cache-directory", type=Path)
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    manifest = build_temporal_assets(args.dashboard_root, args.output_root)
+    manifest = build_temporal_assets(args.dashboard_root, args.output_root, args.cache_directory)
     print(
         f"Built {len(manifest['files'])} scheduled opening-time assets for "
         f"{len(manifest['area_ids']):,} areas and {len(manifest['parent_ids'])} LADs"

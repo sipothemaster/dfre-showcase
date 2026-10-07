@@ -44,3 +44,21 @@ panels, and map overlays. Formal SDR UK colours take precedence over local test
 site variants. `Explore map` remains the default view and `About the data`
 provides definitions, limitations, pipeline context, and a link to fuller
 methods.
+
+## 7 October 2026 — Homepage styling
+
+The user requested HASP visual styling for the homepage while retaining its
+headline-led data story, existing copy, section order and analytical results.
+`home-hasp.css` scopes the treatment to `body.hasp-story`; the explorer and
+other analysis pages keep their existing styles. Use the supplied HASP artwork,
+Figtree type, navy/green accents and restrained white/pale panels. Preserve the
+scientific chart palettes and their matching legends.
+
+## 7 October 2026 — Explorer release
+
+Use the validated `nutrition_society_v2` dashboard caches for restaurant and
+scheduled opening metrics. Counts exclude retail; fast food includes the
+original tags plus Chinese, Indian and Desserts. Default to `Opening deliverable
+restaurants` at Friday 20:00, label the static measure `Total deliverable
+restaurants`, and temporarily hide Iceland from the controls and area profiles.
+Retain missing fast-food shares as unavailable when the denominator is zero.

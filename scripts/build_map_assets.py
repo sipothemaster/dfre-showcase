@@ -65,10 +65,13 @@ def build_assets(
     dashboard_root: Path,
     channel_csv: Path,
     output_root: Path,
+    cache_directory: Path | None = None,
 ) -> dict:
-    area = pd.read_parquet(dashboard_root / "data/cache/area_delivery_coverage.parquet")
-    lookup = pd.read_parquet(dashboard_root / "data/cache/area_parent_lookup.parquet")
-    parent = pd.read_parquet(dashboard_root / "data/cache/parent_delivery_coverage.parquet")
+    cache = cache_directory or dashboard_root / "data/cache/nutrition_society_v2"
+    area = pd.read_parquet(cache / "area_delivery_coverage.parquet")
+    lookup = pd.read_parquet(cache / "area_parent_lookup.parquet")
+    parent = pd.read_parquet(cache / "parent_delivery_coverage.parquet")
+    contract = load_json(cache / "source_contract.json")
     channels = pd.read_csv(channel_csv, dtype=str)
 
     for frame, key, label, expected in [
@@ -147,9 +150,8 @@ def build_assets(
             "name": str(row["parent_name"]),
             "n": integer(row["child_area_count"]),
             "pop": integer(row["population_total"]),
-            "r": number(row["median_deliverable_restaurant_count"], 1),
+            "r": number(row["median_food_restaurant_count"], 1),
             "ff": number(row["median_fast_food_restaurant_count"], 1),
-            "ffd": number(row["fast_food_restaurant_density_per_100k"], 1),
             "ffs": number(row["fast_food_restaurant_share"], 4),
             "g": number(row["median_grocery_restaurant_count"], 1),
             **{
@@ -186,11 +188,12 @@ def build_assets(
                 "parent": parent_id,
                 "type": "DZ" if str(row["area_type"]).lower().startswith("data") else "LSOA",
                 "pop": integer(row["population_total"]),
-                "r": integer(row["deliverable_restaurant_count"]),
+                "r": integer(row["food_restaurant_count"]),
                 "ff": integer(row["fast_food_restaurant_count"]),
-                "ffd": number(row["fast_food_restaurant_density_per_100k"], 1),
                 "ffs": number(row["fast_food_restaurant_share"], 4),
                 "g": integer(row["grocery_restaurant_count"]),
+                "schedule_known": integer(row["known_schedule_count"]),
+                "schedule_unknown": integer(row["unknown_schedule_count"]),
                 **{column: integer(row[column]) for column in CHANNEL_COLUMNS.values()},
             }
             features.append(feature)
@@ -208,12 +211,15 @@ def build_assets(
         "child_files": len(parent_by_id),
         "child_bytes": child_bytes,
         "geography_design": "One representative postcode per LSOA/Data Zone",
+        "taxonomy_version": contract["taxonomy"]["version"],
+        "source_contract": contract,
+        "restaurant_denominator": "Distinct deliverable non-retail restaurant IDs",
         "metrics": {
             "r": {
-                "label": "Deliverable restaurants",
+                "label": "Total deliverable restaurants",
                 "parent_label": "Median per small area",
-                "breaks": quantile_breaks(parent["median_deliverable_restaurant_count"], 1),
-                "child_breaks": quantile_breaks(area["deliverable_restaurant_count"], 1),
+                "breaks": quantile_breaks(parent["median_food_restaurant_count"], 1),
+                "child_breaks": quantile_breaks(area["food_restaurant_count"], 1),
             },
             "ff": {
                 "label": "Fast-food restaurants",
@@ -258,12 +264,13 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=showcase_root / "public/map/v1",
     )
+    parser.add_argument("--cache-directory", type=Path)
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    manifest = build_assets(args.dashboard_root, args.channel_csv, args.output_root)
+    manifest = build_assets(args.dashboard_root, args.channel_csv, args.output_root, args.cache_directory)
     print(
         f"Built {manifest['parents']} LADs and {manifest['children']:,} child areas "
         f"across {manifest['child_files']} static files"

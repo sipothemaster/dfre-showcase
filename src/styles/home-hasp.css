@@ -1,0 +1,411 @@
+/* HASP visual identity, with the existing headline-led story and chart colours. */
+body.hasp-story {
+	--story-navy: #24226f;
+	--story-green: #0b5126;
+	--story-blue: #1877cf;
+	--story-mint: #03cea3;
+	--story-pale: #e2e5f3;
+	--story-font: 'Figtree', 'Helvetica Neue', Arial, sans-serif;
+	--paper: #fff;
+	--surface: #fff;
+	--ink: #24226f;
+	--muted: #555572;
+	--line: rgba(36, 34, 111, 0.16);
+	--line-strong: rgba(36, 34, 111, 0.32);
+	--gutter: clamp(1.25rem, 4vw, 3.5rem);
+	background: var(--paper);
+	font-family: var(--story-font);
+	font-size: 18px;
+	line-height: 1.65;
+}
+
+/* Legacy components use explicit typefaces; scope this brand override to home. */
+.hasp-story :where(h1, h2, h3, h4, h5, h6, p, a, span, strong, small, summary, figcaption, label, button, th, td, text) {
+	font-family: var(--story-font) !important;
+}
+
+.hasp-story .regression-equation,
+.hasp-story .regression-equation :where(*) {
+	font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif !important;
+}
+
+.hasp-story .site-shell {
+	max-width: 90rem;
+}
+
+.hasp-story .site-header {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	min-height: 96px;
+	gap: 2rem;
+	background: #fff;
+}
+
+.home-identity {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+	min-width: 0;
+}
+
+.home-brand {
+	flex: 0 0 auto;
+	text-decoration: none;
+}
+
+.home-brand img {
+	display: block;
+	width: auto;
+	height: 46px;
+}
+
+.hasp-story .wordmark {
+	max-width: 15rem;
+	padding-left: 1.5rem;
+	border-left: 1px solid var(--line);
+	color: var(--story-navy);
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	line-height: 1.6;
+}
+
+.hasp-story .site-nav {
+	align-items: center;
+	gap: clamp(1rem, 2.4vw, 2rem);
+	font-size: 0.84rem;
+	font-weight: 600;
+}
+
+.hasp-story .site-nav a {
+	padding-block: 0.75rem;
+	text-decoration: none;
+}
+
+.hasp-story .site-nav a:hover {
+	color: var(--story-green);
+	text-decoration: underline;
+	text-underline-offset: 0.4rem;
+}
+
+.hasp-story .site-nav a:last-child {
+	padding: 0.6rem 1rem;
+	border: 1px solid var(--line-strong);
+	border-radius: 10px;
+}
+
+.hasp-story a:focus-visible,
+.hasp-story summary:focus-visible,
+.hasp-story button:focus-visible {
+	outline: 3px solid var(--story-blue);
+	outline-offset: 4px;
+}
+
+.hasp-story [id] {
+	scroll-margin-top: 7.5rem;
+}
+
+.hasp-story .hero {
+	grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.75fr);
+	gap: clamp(2.5rem, 5vw, 5rem);
+	align-items: center;
+	padding-block: clamp(3.5rem, 7vw, 6.5rem) clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.hasp-story .eyebrow,
+.hasp-story .section-kicker,
+.hasp-story .architecture-kicker,
+.hasp-story .method-label {
+	color: var(--story-green);
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+}
+
+.hasp-story h1 {
+	max-width: 16ch;
+	color: var(--story-navy);
+	font-size: clamp(3.25rem, 6.6vw, 6.25rem);
+	font-weight: 700;
+	letter-spacing: -0.045em;
+	line-height: 1.04;
+	text-wrap: balance;
+}
+
+.hasp-story .hero-tags {
+	gap: 0.7rem 1.25rem;
+	margin-top: 1.7rem;
+	font-size: 0.8rem;
+}
+
+.hasp-story .hero-tags span::before {
+	content: '';
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin-right: 0.5rem;
+	border-radius: 50%;
+	background: var(--story-green);
+	vertical-align: middle;
+}
+
+.hasp-story .hero-actions {
+	gap: 0.8rem 1.4rem;
+	margin-top: 2rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.hasp-story .primary-action {
+	padding: 0.9rem 1.1rem;
+	border: 1px solid var(--story-green);
+	border-radius: 10px;
+	background: var(--story-green);
+	color: #fff;
+}
+
+.hasp-story .primary-action:hover {
+	background: var(--story-navy);
+	border-color: var(--story-navy);
+}
+
+.hasp-story .hero-code-links {
+	margin-top: 1.6rem;
+	font-size: 0.74rem;
+}
+
+.hasp-story .hero-code-links > span:first-child {
+	color: var(--story-green);
+}
+
+.hasp-story .hero-code-item a {
+	overflow-wrap: anywhere;
+}
+
+.hasp-story .scale-note {
+	align-self: center;
+	padding: 1.5rem;
+	border: 1px solid var(--line);
+	border-top: 4px solid var(--story-green);
+	border-radius: 16px;
+	background: #f5f6fb;
+}
+
+.hasp-story .scale-note > p {
+	padding-block: 0 1.3rem;
+	font-size: 0.84rem;
+	line-height: 1.6;
+}
+
+.hasp-story .fact {
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.2rem;
+	padding-block: 1rem;
+}
+
+.hasp-story .fact:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+.hasp-story .fact-value {
+	font-size: clamp(2rem, 3vw, 2.6rem);
+	font-weight: 700;
+	letter-spacing: -0.035em;
+	line-height: 1.1;
+}
+
+.hasp-story .fact-label {
+	font-size: 0.8rem;
+	line-height: 1.45;
+	text-align: left;
+}
+
+.hasp-story .pipeline-section,
+.hasp-story .analysis-framework-section {
+	padding-block: clamp(3rem, 5vw, 5rem);
+}
+
+.hasp-story .analysis-framework-section {
+	border-top: 1px solid var(--line);
+}
+
+.hasp-story .finding-section {
+	padding-block: clamp(4rem, 7vw, 7rem);
+}
+
+.hasp-story .channel-section {
+	background: #f5f6fb;
+}
+
+.hasp-story .exposure-section {
+	background: #fff;
+}
+
+.hasp-story .editorial-intro {
+	width: 100%;
+	display: grid;
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.85fr);
+	gap: 1.4rem 3rem;
+	align-items: start;
+	margin-bottom: 3rem;
+}
+
+.hasp-story .editorial-intro .section-kicker {
+	grid-column: 1 / -1;
+	margin: 0;
+}
+
+.hasp-story .editorial-intro h2 {
+	max-width: 27ch;
+	font-size: clamp(2rem, 3.1vw, 3rem);
+	font-weight: 700;
+	letter-spacing: -0.035em;
+	line-height: 1.13;
+	text-wrap: balance;
+}
+
+.hasp-story .editorial-intro > p:last-child {
+	max-width: 42ch;
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.7;
+}
+
+.hasp-story :is(.architecture-band, .framework-branch, .channel-map-figure, .patch-density-figure, .morphology-rule, .patch-composition, .regression-module, .regression-figure, .sem-comparison) {
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	background: #fff;
+}
+
+.hasp-story :is(.channel-map-figure, .patch-density-figure, .morphology-rule, .patch-composition, .regression-figure, .sem-comparison) {
+	padding: clamp(1rem, 2.3vw, 2rem);
+}
+
+.hasp-story :is(.architecture-band-header h3, .analysis-framework-heading h2, .patch-analysis-heading h3, .spatial-robustness-heading h3) {
+	color: var(--story-navy);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.hasp-story :is(.channel-map-heading h3, .regression-figure-heading h3) {
+	color: var(--story-navy);
+	font-size: clamp(1.4rem, 2.1vw, 1.9rem);
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.hasp-story .channel-map-summary h4 {
+	font-weight: 700;
+}
+
+.hasp-story #patch-composition-title,
+.hasp-story #patch-density-title {
+	font-weight: 700;
+}
+
+.hasp-story #patch-morphology-title {
+	max-width: none;
+	font-size: clamp(1rem, 1.45vw, 1.25rem);
+	line-height: 1.35;
+	white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+	.hasp-story #patch-morphology-title { white-space: normal; }
+}
+
+.hasp-story .sem-diagnostics strong {
+	font-size: clamp(1.35rem, 2.2vw, 2rem);
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.hasp-story .sem-contrast-card strong {
+	gap: 0.35rem;
+}
+
+.hasp-story .sem-contrast-card strong b {
+	font-size: inherit;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.hasp-story .framework-branch h3 {
+	font-weight: 700;
+}
+
+.hasp-story .framework-branch header p,
+.hasp-story .framework-flow > b {
+	color: var(--story-green);
+}
+
+.hasp-story .framework-flow strong {
+	border-radius: 10px;
+	background: #f5f6fb;
+}
+
+.hasp-story .framework-inputs span,
+.hasp-story .framework-outputs span {
+	border-radius: 8px;
+}
+
+.hasp-story .regression-module {
+	padding: clamp(1rem, 2.3vw, 2rem);
+}
+
+.hasp-story :is(.channel-map-grid, .patch-composition-grid) > section {
+	min-width: 0;
+}
+
+.hasp-story .channel-map-heading,
+.hasp-story .patch-module-heading,
+.hasp-story .regression-figure-heading {
+	gap: 1.25rem 2rem;
+}
+
+.hasp-story .site-footer {
+	margin-top: 2rem;
+	padding-block: 2.5rem;
+	font-size: 0.9rem;
+}
+
+.hasp-story .contact-identity strong {
+	color: var(--story-navy);
+	font-family: ui-monospace, 'Cascadia Code', Consolas, 'Liberation Mono', monospace !important;
+}
+
+@media (max-width: 900px) {
+	.hasp-story .site-header { gap: 1.2rem; }
+	.home-identity { gap: 1rem; }
+	.home-brand img { height: 40px; }
+	.hasp-story .wordmark { max-width: 9.5rem; padding-left: 1rem; }
+	.hasp-story .site-nav { gap: 1rem; font-size: 0.8rem; }
+	.hasp-story .hero { grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.7fr); }
+	.hasp-story h1 { font-size: clamp(3rem, 6.5vw, 4.5rem); }
+	.hasp-story .editorial-intro { grid-template-columns: 1fr; align-items: start; gap: 1.5rem; }
+	.hasp-story .editorial-intro h2 { max-width: 32ch; }
+	.hasp-story .editorial-intro > p:last-child { max-width: 65ch; }
+}
+
+@media (max-width: 700px) {
+	.hasp-story .site-header { position: static; flex-wrap: wrap; padding-block: 1rem; gap: 1rem; }
+	.home-identity { width: 100%; justify-content: space-between; gap: 1rem; }
+	.home-brand img { height: 38px; }
+	.hasp-story .wordmark { max-width: 10rem; padding-left: 1rem; font-size: 0.62rem; }
+	.hasp-story .site-nav { width: 100%; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; }
+	.hasp-story .site-nav a { padding-block: 0.5rem; }
+	.hasp-story .site-nav a:last-child { padding: 0.45rem 0.8rem; }
+	.hasp-story [id] { scroll-margin-top: 1rem; }
+	.hasp-story .hero { grid-template-columns: 1fr; padding-top: 3rem; gap: 2.5rem; }
+	.hasp-story h1 { max-width: 16ch; font-size: clamp(2.8rem, 9vw, 4rem); }
+	.hasp-story .hero-code-links { grid-template-columns: 1fr; gap: 0.45rem; }
+	.hasp-story .hero-code-links > span:first-child { grid-row: auto; }
+	.hasp-story .hero-code-links > .hero-code-item { grid-column: 1; }
+	.hasp-story .scale-note { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.5rem; padding: 1.2rem; }
+	.hasp-story .scale-note > p { grid-column: 1 / -1; }
+	.hasp-story .fact:nth-last-child(2) { border-bottom: 0; }
+	.hasp-story .editorial-intro h2 { font-size: clamp(1.9rem, 6vw, 2.7rem); }
+	.hasp-story .site-footer { align-items: start; gap: 1.5rem; }
+}

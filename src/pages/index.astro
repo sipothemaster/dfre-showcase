@@ -6,6 +6,8 @@ import ChannelCoverageMaps from '../components/ChannelCoverageMaps.astro';
 import ChannelPatchAnalysis from '../components/ChannelPatchAnalysis.astro';
 import ExposureFindings from '../components/ExposureFindings.astro';
 import SpatialRobustness from '../components/SpatialRobustness.astro';
+import haspLogo from '../assets/brand/hasp/hasp-data-service.png';
+import '../styles/home-hasp.css';
 
 const facts = [
 	{ value: '43k', label: 'LSOAs / Data Zones' },
@@ -20,9 +22,15 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 	title="Britain's Digital Food Environment"
 	description="A spatial data project mapping restaurant and grocery delivery across Britain, from data engineering to demographic and statistical analysis."
 	socialImage="og.png"
+	bodyClass="hasp-story"
 >
 	<header class="site-header site-shell">
-		<a class="wordmark" href="#overview">DFRE / Spatial data project</a>
+		<div class="home-identity">
+			<a class="home-brand" href="https://hasp.ac.uk/" target="_blank" rel="noreferrer" aria-label="Healthy and Sustainable Places Data Service website">
+				<img src={haspLogo.src} width="180" height="52" alt="Healthy and Sustainable Places Data Service" />
+			</a>
+			<a class="wordmark" href="#overview">DFRE / Spatial data project</a>
+		</div>
 		<nav class="site-nav" aria-label="Primary navigation">
 			<a href="#overview">Overview</a>
 			<a href="#pipeline">Pipeline</a>
@@ -36,9 +44,6 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 			<div>
 				<p class="eyebrow">Digital food retail environment · Great Britain</p>
 				<h1>Mapping Britain's digital food environment</h1>
-				<p class="hero-deck">
-					An end-to-end spatial data project tracing how restaurant and grocery delivery vary across place. The analysis examines how these spatial patterns relate to deprivation, rurality and population.
-				</p>
 				<div class="hero-tags" aria-label="Project disciplines">
 					<span>Data engineering</span>
 					<span>Spatial analysis</span>

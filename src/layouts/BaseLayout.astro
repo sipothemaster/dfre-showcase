@@ -5,9 +5,10 @@ interface Props {
 	title: string;
 	description: string;
 	socialImage?: string;
+	bodyClass?: string;
 }
 
-const { title, description, socialImage } = Astro.props;
+const { title, description, socialImage, bodyClass } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const socialImageURL = socialImage
@@ -35,7 +36,7 @@ const socialImageURL = socialImage
 		{socialImageURL && <meta name="twitter:image" content={socialImageURL} />}
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class={bodyClass}>
 		<a class="skip-link" href="#main-content">Skip to content</a>
 		<slot />
 	</body>
