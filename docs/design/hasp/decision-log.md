@@ -62,3 +62,7 @@ original tags plus Chinese, Indian and Desserts. Default to `Opening deliverable
 restaurants` at Friday 20:00, label the static measure `Total deliverable
 restaurants`, and temporarily hide Iceland from the controls and area profiles.
 Retain missing fast-food shares as unavailable when the denominator is zero.
+
+Fit the initial map and every return to the LAD overview to the full imported
+Great Britain geometry, including the northern islands. Refit national views
+on resize and allow further zooming out without a geographic camera constraint.

@@ -65,7 +65,8 @@ const channelLabels: Record<string, string> = {
 };
 const channelColors = ['#203c39', '#8f897e', '#b6412f', '#ddd8cc', '#6f6b63'];
 const continuousColors = ['#e4e0d5', '#b9cbc5', '#77a59c', '#2f7069', '#173f3c'];
-const gbBounds: [[number, number], [number, number]] = [[-8.9, 49.7], [2.2, 59.2]];
+const gbBounds: [[number, number], [number, number]] = [[-8.9, 49.7], [2.2, 61.0]];
+let overviewBounds = new LngLatBounds(gbBounds);
 
 let manifest: MapManifest;
 let parents: FeatureCollection;
@@ -374,6 +375,10 @@ async function selectParent(feature: FeatureCollection['features'][number]) {
 	}
 }
 
+function fitGreatBritain(duration = 0) {
+	map.fitBounds(overviewBounds, { padding: 24, bearing: 0, pitch: 0, duration });
+}
+
 function clearSelection() {
 	if (map.getLayer('children-outline')) map.removeLayer('children-outline');
 	if (map.getLayer('children-fill')) map.removeLayer('children-fill');
@@ -384,7 +389,7 @@ function clearSelection() {
 	areaSelect.value = '';
 	clearButton.disabled = true;
 	map.setPaintProperty('parents-fill', 'fill-opacity', 0.78);
-	map.fitBounds(gbBounds, { padding: 24, duration: 700 });
+	fitGreatBritain(700);
 	profile.innerHTML = `
 		<p class="profile-kicker">Great Britain overview</p>
 		<h2>Select a local authority</h2>
@@ -397,14 +402,16 @@ function clearSelection() {
 const map = new Map({
 	container: 'map',
 	style: 'https://tiles.openfreemap.org/styles/positron',
-	center: [-3.2, 54.7],
-	zoom: 4.4,
-	minZoom: 4,
+	bounds: gbBounds,
+	fitBoundsOptions: { padding: 24 },
+	minZoom: 1,
 	maxZoom: 13,
-	maxBounds: [[-11.5, 48], [4.5, 61.5]],
 	attributionControl: true,
 });
 map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
+map.on('resize', () => {
+	if (!selectedParent) fitGreatBritain();
+});
 
 map.on('load', async () => {
 	try {
@@ -412,6 +419,12 @@ map.on('load', async () => {
 			fetch(`${base}map/v1/manifest.json`).then((response) => response.json()),
 			fetch(`${base}map/v1/parents.geojson`).then((response) => response.json()),
 		]);
+		overviewBounds = new LngLatBounds();
+		parents.features.forEach((feature) => {
+			const bounds = geometryBounds(feature.geometry);
+			overviewBounds.extend(bounds.getSouthWest()).extend(bounds.getNorthEast());
+		});
+		fitGreatBritain();
 		if (currentMetric() === 'open') await ensureTemporalManifest();
 		map.addSource('parents', { type: 'geojson', data: parents as never, promoteId: 'id' });
 		map.addLayer({
