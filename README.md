@@ -103,6 +103,13 @@ npm run build
 
 The map build validates 43,064 unique small-area keys and 350 LAD parent keys before writing output. Asset manifests record scope, byte size and checksums where applicable.
 
+The explorer's rapid-grocery layer reads the validated sibling package
+`WebscrapingDeliveryAvailability/data/output/grocery-delivery-data-package-2026-10-19`.
+It discovers the three inputs containing a `FastDelivery` field, validates the
+same 43,064 geography keys in each, and publishes only an anonymous count of
+affirmative observations from 0 to 3. The public assets also retain a separate
+unresolved count; `Unknown` is never converted to `No`.
+
 ## Adding a future analysis
 
 Each detailed analysis is a content module in `src/content/analyses/`. Adding a Markdown file with the collection schema fields defined in `src/content.config.ts` generates its analysis route. Homepage findings remain deliberately curated in `src/pages/index.astro` and the corresponding presentation components.

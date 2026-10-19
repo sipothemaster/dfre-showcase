@@ -532,6 +532,7 @@
 .hasp-explorer .about-intro,
 .hasp-explorer .explorer-about-view > section,
 .hasp-explorer .about-notes-grid,
+.hasp-explorer .about-source-note,
 .hasp-explorer .explorer-about-view > hr {
 	width: min(100%, 980px);
 	margin-inline: auto;
@@ -593,12 +594,73 @@
 
 .hasp-explorer .about-card p,
 .hasp-explorer .about-pipeline p,
+.hasp-explorer .about-instructions p,
+.hasp-explorer .about-source-note p,
 .hasp-explorer .about-notes-grid p,
 .hasp-explorer .about-notes-grid li {
 	margin: 0;
 	color: var(--hasp-navy);
 	font-size: 13px;
 	line-height: 1.55;
+}
+
+.hasp-explorer .about-card p + p,
+.hasp-explorer .about-instructions p + p {
+	margin-top: 7px;
+}
+
+.hasp-explorer .about-card strong {
+	color: var(--hasp-ink);
+}
+
+.hasp-explorer .about-instructions {
+	border: 1px solid var(--hasp-border);
+	border-radius: 14px;
+	background: #fff;
+	overflow: hidden;
+}
+
+.hasp-explorer .about-instructions details + details {
+	border-top: 1px solid var(--hasp-border);
+}
+
+.hasp-explorer .about-instructions summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 13px 16px;
+	color: var(--hasp-ink);
+	font-size: 14px;
+	font-weight: 700;
+	list-style: none;
+	cursor: pointer;
+}
+
+.hasp-explorer .about-instructions summary::-webkit-details-marker {
+	display: none;
+}
+
+.hasp-explorer .about-instructions summary::after {
+	content: '+';
+	flex: 0 0 auto;
+	color: var(--hasp-green);
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 1;
+}
+
+.hasp-explorer .about-instructions details[open] summary {
+	background: #f6f8ff;
+}
+
+.hasp-explorer .about-instructions details[open] summary::after {
+	content: '−';
+}
+
+.hasp-explorer .about-instructions details > div {
+	padding: 0 16px 15px;
+	background: #f6f8ff;
 }
 
 .hasp-explorer .about-pipeline {
@@ -648,6 +710,49 @@
 
 .hasp-explorer .about-notes-grid li + li {
 	margin-top: 6px;
+}
+
+.hasp-explorer .about-source-note {
+	margin-top: 24px;
+	padding: 14px 18px;
+	border: 1px solid var(--hasp-border);
+	border-radius: 12px;
+	background: #fff;
+}
+
+.hasp-explorer .about-source-note h3 {
+	margin-bottom: 10px;
+}
+
+.hasp-explorer .about-source-list {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.hasp-explorer .about-source-list li {
+	color: var(--hasp-navy);
+	font-size: 13px;
+	line-height: 1.55;
+}
+
+.hasp-explorer .about-source-list li + li {
+	margin-top: 8px;
+}
+
+.hasp-explorer .about-source-list strong {
+	color: var(--hasp-ink);
+}
+
+.hasp-explorer .source-status {
+	display: inline-block;
+	margin-left: 4px;
+	padding: 2px 7px;
+	border-radius: 999px;
+	background: rgba(3, 206, 163, 0.12);
+	color: var(--hasp-green);
+	font-size: 11px;
+	font-weight: 700;
+	white-space: nowrap;
 }
 
 .hasp-explorer .about-primary-link {

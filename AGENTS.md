@@ -44,7 +44,7 @@ parent directory.
 | Patch-size distribution and morphology composition | Analytics notebook `06` durable patch-size, composition and KDE-coordinate CSVs | `python scripts/import_grocery_patch_analysis.py` |
 | Patch-morphology England maps | Analytics notebook `06` patch membership, retailer classification and England boundaries | `python scripts/build_patch_morphology_maps.py` |
 | Spatial robustness: OLS, Rook SEM and Jaccard sensitivity | Analytics notebook `04` durable prediction, diagnostic, contrast and weights-audit CSVs | `python scripts/import_spatial_robustness.py` |
-| Explorer static restaurant and channel metrics | `delivery-map-dashboard/data/cache/` plus the imported analytics retailer-channel area CSV | `python scripts/build_map_assets.py` |
+| Explorer static restaurant and rapid-grocery metrics | `delivery-map-dashboard/data/cache/` plus `WebscrapingDeliveryAvailability/data/output/grocery-delivery-data-package-2026-10-19/` | `python scripts/build_map_assets.py` |
 | Explorer scheduled day/hour metric | `delivery-map-dashboard/data/cache/opening_by_hour/` and `parent_opening_by_hour/` | `python scripts/build_temporal_map_assets.py` |
 
 ### England retailer coverage summary
@@ -74,10 +74,14 @@ When the repaired grocery inputs or analytics classification changes, run:
 python ../delivery-analytics/scripts/export_showcase_retailer_channels.py
 python scripts/sync_web_exports.py
 python scripts/build_channel_coverage_maps.py
-python scripts/build_map_assets.py
 ```
 
 No manual modification of the England summary is required.
+
+The explorer rapid-grocery layer is a presentation-only anonymous count across
+the three package inputs that contain `FastDelivery`. Rebuild it separately
+with `python scripts/build_map_assets.py`. Preserve `Unknown` as unresolved and
+do not expose service-specific states in explorer assets or interface copy.
 
 ### Full public rebuild
 

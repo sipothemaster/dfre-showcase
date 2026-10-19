@@ -68,18 +68,16 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<div class="explorer-control-group">
 							<label for="map-metric">Indicator</label>
 							<select id="map-metric">
-								<option value="open" selected>Opening deliverable restaurants</option>
+								<option value="fc" selected>Rapid grocery availability</option>
+								<option value="open">Opening deliverable restaurants</option>
 								<option value="r">Total deliverable restaurants</option>
 								<option value="ff">Fast-food restaurants</option>
 								<option value="ffs">Fast-food share</option>
 								<option value="g">Grocery listings</option>
-								<option value="co">Co-op channel</option>
-								<option value="mo">Morrisons fast channel</option>
-								<option value="sa">Sainsbury's fast channel</option>
 							</select>
 						</div>
 
-						<div class="temporal-controls" id="temporal-controls">
+						<div class="temporal-controls" id="temporal-controls" hidden>
 							<div class="explorer-control-group">
 								<label for="temporal-day">Day</label>
 								<select id="temporal-day">
@@ -150,7 +148,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<p>Click the map or use the area selector to load small-area detail and exact values.</p>
 						<div class="profile-method">
 							<strong>How to read this map</strong>
-							<p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA or Data Zone values and retailer channel states.</p>
+							<p>At national scale, colours show the mean number of rapid grocery services observed per small area. Select a local authority to see exact 0–3 availability levels for each LSOA or Data Zone.</p>
 						</div>
 					</aside>
 				</div>
@@ -164,66 +162,85 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 				hidden
 			>
 				<div class="about-intro">
-					<p class="explorer-main-kicker">About the data</p>
-					<h2>What this explorer shows</h2>
-					<p class="about-lead">The explorer describes delivery availability observed for representative postcodes across small areas in Great Britain. It brings restaurant, fast-food, grocery and selected retailer-channel measures into one interface.</p>
-					<p>Values describe the delivery market captured by the underlying collection and area design. They should not be interpreted as complete address-level coverage or as a direct measure of food consumption.</p>
+					<p class="explorer-main-kicker">About this tool</p>
+					<h2>Delivery availability explorer</h2>
+					<p class="about-lead">Use this tool to see how restaurant and rapid grocery delivery availability varies between neighbourhoods across Great Britain.</p>
+					<p>Start with the national map, select a local authority, then click an LSOA or Data Zone to see the values observed for its representative postcode.</p>
 				</div>
 
 				<hr />
 
 				<section aria-labelledby="measure-heading">
-					<h3 id="measure-heading">Measures in the map</h3>
+					<h3 id="measure-heading">What each measure shows</h3>
 					<div class="about-card-grid">
 						<article class="about-card">
+							<h4>Rapid grocery availability</h4>
+							<p><strong>Measures:</strong> how many of three monitored rapid grocery services were observed as available.</p>
+							<p><strong>Read as:</strong> 0 means none were observed; 3 means all three were observed. Individual service names and states are not shown.</p>
+						</article>
+						<article class="about-card">
 							<h4>Restaurant availability</h4>
-							<p>Total deliverable restaurants counts distinct restaurants available for delivery and excludes retail and non-restaurant listings. Fast food includes the original 13 tags plus Chinese, Indian and Desserts; any matching tag qualifies after retail exclusions. Fast-food share divides these outlets by total deliverable restaurants.</p>
+							<p><strong>Measures:</strong> distinct restaurants available for delivery, fast-food restaurants and fast-food share.</p>
+							<p><strong>Read as:</strong> fast-food share is the proportion of deliverable restaurants classified as fast food after retail exclusions.</p>
 						</article>
 						<article class="about-card">
-							<h4>Grocery availability</h4>
-							<p>Grocery listings and retailer-channel states show observed platform listings and how they compare with selected retailer-operated services.</p>
+							<h4>Opening deliverable restaurants</h4>
+							<p><strong>Measures:</strong> restaurants scheduled to be open for delivery at the selected day and hour.</p>
+							<p><strong>Read as:</strong> restaurants with missing schedules are excluded from the confirmed-open count; they are not assumed to be closed.</p>
 						</article>
 						<article class="about-card">
-							<h4>Scheduled availability</h4>
-							<p>Opening deliverable restaurants counts restaurants scheduled open for delivery at the selected day and hour start. Recorded schedules are used across all seven days; outlets with missing schedules are not confirmed closed.</p>
-						</article>
-						<article class="about-card">
-							<h4>Geographic detail</h4>
-							<p>The national view uses small-area median restaurant and grocery counts. Fast-food share pools fast-food and total restaurant delivery opportunities across those areas. Selecting a local authority loads its LSOA or Data Zone polygons and exact area values.</p>
+							<h4>Grocery listings</h4>
+							<p><strong>Measures:</strong> grocery listings observed on the delivery platform for the representative postcode.</p>
+							<p><strong>Read as:</strong> a listing count, kept separate from the 0–3 rapid grocery service availability measure.</p>
 						</article>
 					</div>
 				</section>
 
 				<hr />
 
-				<section aria-labelledby="pipeline-heading">
-					<h3 id="pipeline-heading">From collection to public map</h3>
-					<div class="about-pipeline" aria-label="Data pipeline summary">
-						<div><span>01</span><strong>Collect</strong><p>Platform and retailer availability are collected in their source repositories.</p></div>
-						<div><span>02</span><strong>Validate</strong><p>Area keys, classifications and analytical definitions are checked by their owning projects.</p></div>
-						<div><span>03</span><strong>Import</strong><p>Validated exports and existing map caches are converted into versioned presentation assets.</p></div>
-						<div><span>04</span><strong>Present</strong><p>This Astro site renders the map without refitting models or redefining results.</p></div>
+				<section aria-labelledby="use-heading">
+					<h3 id="use-heading">How to use this tool</h3>
+					<div class="about-instructions">
+						<details open>
+							<summary>Explore a local authority</summary>
+							<div>
+								<p>Select an area on the map or choose it from the Local authority menu. The map will zoom in and load its LSOA or Data Zone boundaries.</p>
+								<p>Click a small area to open its exact values in the lower-left information card. Use “Return to Great Britain” to reset the map.</p>
+							</div>
+						</details>
+						<details>
+							<summary>Read rapid grocery availability</summary>
+							<div>
+								<p>At national scale, each local authority is coloured by the mean number of observed services per small area, from 0 to 3.</p>
+								<p>After selecting a local authority, every small area receives an exact integer level: 0, 1, 2 or 3 observed services. Unresolved observations remain separate and are not counted as unavailable.</p>
+							</div>
+						</details>
+						<details>
+							<summary>Compare delivery measures</summary>
+							<div>
+								<p>Use the Indicator menu to switch between rapid grocery, restaurant, fast-food and grocery-listing measures. The geography remains fixed so patterns can be compared across the same area.</p>
+								<p>National restaurant and listing values summarise small areas. Selecting a local authority reveals exact small-area values.</p>
+							</div>
+						</details>
+						<details>
+							<summary>Check availability by day and hour</summary>
+							<div>
+								<p>Select “Opening deliverable restaurants”, then choose a day and hour. The map shows the number of restaurants confirmed by their recorded schedules to be open for delivery at that time.</p>
+							</div>
+						</details>
 					</div>
 				</section>
 
-				<hr />
-
-				<div class="about-notes-grid">
-					<section aria-labelledby="limits-heading">
-						<h3 id="limits-heading">Interpretation and limitations</h3>
-						<ul>
-							<li>Availability is observed at representative postcodes and may vary within an area.</li>
-							<li>Platform listings and retailer-operated channels are distinct observations.</li>
-							<li>Scheduled opening reflects recorded opening-time information for the selected snapshot.</li>
-							<li>Missing and unresolved retailer states remain separate where required by the source contract.</li>
-						</ul>
-					</section>
-					<section aria-labelledby="sources-heading">
-						<h3 id="sources-heading">Methods and sources</h3>
-						<p>The collection pipeline, analytical definitions and public presentation layer are maintained separately so that the explorer does not silently alter validated results.</p>
-						<a class="about-primary-link" href={`${base}#pipeline`}>Read the full methods and pipeline <span aria-hidden="true">→</span></a>
-					</section>
-				</div>
+				<section class="about-source-note" aria-labelledby="sources-heading">
+					<h3 id="sources-heading">Data sources</h3>
+					<ul class="about-source-list">
+						<li><strong>Digital delivery platform:</strong> restaurant listings, delivery coverage and recorded opening schedules from the DFRE platform collection pipeline. <span class="source-status">Planned for deployment on HASP</span></li>
+						<li><strong>Grocery retailer delivery:</strong> rapid-delivery availability from three monitored retailer-operated services. <span class="source-status">Planned for deployment on HASP</span></li>
+						<li><strong>Small-area geography:</strong> ONS LSOA 2021 boundaries for England and Wales and Scottish Government Data Zone 2022 boundaries for Scotland. LAD 2024 boundaries support the national overview.</li>
+						<li><strong>Population:</strong> ONS mid-2024 small-area population estimates for England and Wales and 2022 Data Zone total population for Scotland.</li>
+					</ul>
+					<a class="about-primary-link" href={`${base}#pipeline`}>Read the full methods and data pipeline <span aria-hidden="true">→</span></a>
+				</section>
 			</section>
 		</div>
 	</main>

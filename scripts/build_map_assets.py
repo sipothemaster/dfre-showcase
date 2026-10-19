@@ -9,6 +9,7 @@ Python callback or cloud service is required at runtime.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -16,19 +17,7 @@ import pandas as pd
 
 
 EXPECTED_AREAS = 43_064
-CATEGORY_CODES = {
-    "Both channels": 0,
-    "Direct only": 1,
-    "Just Eat only": 2,
-    "Neither observed": 3,
-    "Direct unresolved": 4,
-}
-CHANNEL_COLUMNS = {
-    "coop": "co",
-    "morrisons_fast": "mo",
-    "sainsburys_fast": "sa",
-    "iceland": "ic",
-}
+RAPID_SERVICE_COUNT = 3
 
 
 def number(value, digits: int = 2):
@@ -47,6 +36,82 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def sha256_files(paths: list[Path]) -> str:
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
+def load_rapid_grocery_coverage(package_root: Path) -> tuple[pd.DataFrame, dict]:
+    """Build an anonymous 0-3 rapid-grocery coverage count.
+
+    The source package owns each service's FastDelivery definition. This
+    presentation import counts affirmative observations and retains Unknown as
+    a separate count so it is never silently treated as No.
+    """
+
+    source_paths = []
+    for path in sorted((package_root / "retailers").glob("*.csv")):
+        columns = pd.read_csv(path, nrows=0).columns
+        if "FastDelivery" in columns:
+            source_paths.append(path)
+    if len(source_paths) != RAPID_SERVICE_COUNT:
+        raise ValueError(
+            f"Expected {RAPID_SERVICE_COUNT} rapid-grocery inputs with a FastDelivery field, "
+            f"found {len(source_paths)}"
+        )
+    frames: list[pd.DataFrame] = []
+    expected_geographies: set[str] | None = None
+
+    for index, path in enumerate(source_paths, start=1):
+        frame = pd.read_csv(
+            path,
+            dtype=str,
+            usecols=["GeographyCode", "FastDelivery"],
+        )
+        if len(frame) != EXPECTED_AREAS or frame["GeographyCode"].nunique() != EXPECTED_AREAS:
+            raise ValueError(
+                f"Unexpected rapid-grocery geography keys in input {index}: "
+                f"{len(frame):,} rows"
+            )
+        statuses = set(frame["FastDelivery"].dropna().unique())
+        if not statuses.issubset({"Yes", "No", "Unknown"}):
+            raise ValueError(
+                f"Unexpected FastDelivery values in input {index}: {sorted(statuses)}"
+            )
+        geography_set = set(frame["GeographyCode"])
+        if expected_geographies is None:
+            expected_geographies = geography_set
+        elif geography_set != expected_geographies:
+            raise ValueError("Rapid-grocery input geography sets do not match")
+        frames.append(
+            frame.set_index("GeographyCode")["FastDelivery"].rename(f"service_{index}")
+        )
+
+    statuses = pd.concat(frames, axis=1)
+    coverage = pd.DataFrame(index=statuses.index)
+    coverage["fc"] = statuses.eq("Yes").sum(axis=1).astype(int)
+    coverage["fu"] = statuses.eq("Unknown").sum(axis=1).astype(int)
+
+    if not coverage["fc"].between(0, len(source_paths)).all():
+        raise ValueError("Rapid-grocery coverage count fell outside 0-3")
+
+    readme_path = package_root / "README.md"
+    contract = {
+        "source_owner": "WebscrapingDeliveryAvailability",
+        "package": package_root.name,
+        "services": len(source_paths),
+        "rows_per_service": EXPECTED_AREAS,
+        "geography": "One repaired representative postcode per LSOA 2021 or Data Zone 2022",
+        "coverage_definition": "Count of services with FastDelivery=Yes",
+        "unresolved_definition": "Count of services with FastDelivery=Unknown; Unknown is not treated as No",
+        "combined_input_sha256": sha256_files(source_paths),
+        "readme_sha256": sha256_files([readme_path]),
+    }
+    return coverage, contract
+
+
 def write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -63,7 +128,7 @@ def quantile_breaks(values: pd.Series, digits: int = 2) -> list[float]:
 
 def build_assets(
     dashboard_root: Path,
-    channel_csv: Path,
+    grocery_package: Path,
     output_root: Path,
     cache_directory: Path | None = None,
 ) -> dict:
@@ -72,7 +137,7 @@ def build_assets(
     lookup = pd.read_parquet(cache / "area_parent_lookup.parquet")
     parent = pd.read_parquet(cache / "parent_delivery_coverage.parquet")
     contract = load_json(cache / "source_contract.json")
-    channels = pd.read_csv(channel_csv, dtype=str)
+    rapid_coverage, rapid_contract = load_rapid_grocery_coverage(grocery_package)
 
     for frame, key, label, expected in [
         (area, "area_id", "area coverage", EXPECTED_AREAS),
@@ -82,52 +147,24 @@ def build_assets(
         if len(frame) != expected or frame[key].nunique() != expected:
             raise ValueError(f"Unexpected {label} keys: {len(frame):,} rows")
 
-    expected_channel_rows = EXPECTED_AREAS * len(CHANNEL_COLUMNS)
-    if len(channels) != expected_channel_rows:
-        raise ValueError(
-            f"Expected {expected_channel_rows:,} channel rows, found {len(channels):,}"
-        )
-    channels["channel_code"] = channels["channel_category"].map(CATEGORY_CODES)
-    if channels["channel_code"].isna().any():
-        raise ValueError("Unrecognised channel category")
-
-    channel_wide = channels.pivot(
-        index="geography_code", columns="comparison", values="channel_code"
-    ).rename(columns=CHANNEL_COLUMNS)
     metrics = area.merge(lookup, on="area_id", how="inner", validate="one_to_one")
     metrics = metrics.merge(
-        channel_wide,
+        rapid_coverage,
         left_on="area_id",
         right_index=True,
         how="inner",
         validate="one_to_one",
     )
     if len(metrics) != EXPECTED_AREAS:
-        raise ValueError("Area metrics and channel geography sets do not match")
+        raise ValueError("Area metrics and rapid-grocery geography sets do not match")
     area_by_id = metrics.set_index("area_id").to_dict("index")
 
-    parent_channel = channels.merge(
-        lookup,
-        left_on="geography_code",
-        right_on="area_id",
-        how="inner",
-        validate="many_to_one",
+    parent_rapid = metrics.groupby("parent_id", observed=True).agg(
+        fc=("fc", "mean"),
+        fu=("fu", "sum"),
     )
-    parent_channel["is_justeat_only"] = (
-        parent_channel["channel_category"] == "Just Eat only"
-    ).astype(float)
-    platform_rates = (
-        parent_channel.groupby(["parent_id", "comparison"], observed=True)[
-            "is_justeat_only"
-        ]
-        .mean()
-        .mul(100)
-        .unstack("comparison")
-        .rename(columns=CHANNEL_COLUMNS)
-    )
-    platform_rates = platform_rates.add_suffix("_je")
     parent = parent.merge(
-        platform_rates,
+        parent_rapid,
         left_on="parent_id",
         right_index=True,
         how="left",
@@ -154,10 +191,8 @@ def build_assets(
             "ff": number(row["median_fast_food_restaurant_count"], 1),
             "ffs": number(row["fast_food_restaurant_share"], 4),
             "g": number(row["median_grocery_restaurant_count"], 1),
-            **{
-                column: number(row.get(column), 2)
-                for column in ["co_je", "mo_je", "sa_je", "ic_je"]
-            },
+            "fc": number(row["fc"], 2),
+            "fu": integer(row["fu"]),
         }
         parent_features.append(feature)
     if len(parent_features) != 350:
@@ -194,7 +229,8 @@ def build_assets(
                 "g": integer(row["grocery_restaurant_count"]),
                 "schedule_known": integer(row["known_schedule_count"]),
                 "schedule_unknown": integer(row["unknown_schedule_count"]),
-                **{column: integer(row[column]) for column in CHANNEL_COLUMNS.values()},
+                "fc": integer(row["fc"]),
+                "fu": integer(row["fu"]),
             }
             features.append(feature)
         destination = children_output / f"{parent_id}.geojson"
@@ -213,6 +249,7 @@ def build_assets(
         "geography_design": "One representative postcode per LSOA/Data Zone",
         "taxonomy_version": contract["taxonomy"]["version"],
         "source_contract": contract,
+        "rapid_grocery_contract": rapid_contract,
         "restaurant_denominator": "Distinct deliverable non-retail restaurant IDs",
         "metrics": {
             "r": {
@@ -239,8 +276,14 @@ def build_assets(
                 "breaks": quantile_breaks(parent["median_grocery_restaurant_count"], 1),
                 "child_breaks": quantile_breaks(area["grocery_restaurant_count"], 1),
             },
+            "fc": {
+                "label": "Rapid grocery availability",
+                "parent_label": "Mean observed services per small area",
+                "breaks": [0, 1, 2, 3],
+                "child_breaks": [0, 1, 2, 3],
+                "semantics": "Count of three services observed as available; unresolved observations remain separate",
+            },
         },
-        "channel_codes": {str(code): label for label, code in CATEGORY_CODES.items()},
     }
     write_json(output_root / "manifest.json", manifest)
     return manifest
@@ -255,9 +298,13 @@ def parse_args() -> argparse.Namespace:
         default=showcase_root.parent / "delivery-map-dashboard",
     )
     parser.add_argument(
-        "--channel-csv",
+        "--grocery-package",
         type=Path,
-        default=showcase_root / "public/data/v1/retailer_channel_areas.csv",
+        default=(
+            showcase_root.parent
+            / "WebscrapingDeliveryAvailability"
+            / "data/output/grocery-delivery-data-package-2026-10-19"
+        ),
     )
     parser.add_argument(
         "--output-root",
@@ -270,7 +317,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    manifest = build_assets(args.dashboard_root, args.channel_csv, args.output_root, args.cache_directory)
+    manifest = build_assets(
+        args.dashboard_root,
+        args.grocery_package,
+        args.output_root,
+        args.cache_directory,
+    )
     print(
         f"Built {manifest['parents']} LADs and {manifest['children']:,} child areas "
         f"across {manifest['child_files']} static files"

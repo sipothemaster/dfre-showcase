@@ -15,11 +15,11 @@ type MetricManifest = {
 	parent_label: string;
 	breaks: number[];
 	child_breaks: number[];
+	semantics?: string;
 };
 
 type MapManifest = {
 	metrics: Record<string, MetricManifest>;
-	channel_codes: Record<string, string>;
 };
 
 type TemporalManifest = MetricManifest & {
@@ -58,13 +58,8 @@ const legend = document.querySelector<HTMLElement>('#map-legend')!;
 const profile = document.querySelector<HTMLElement>('#area-profile')!;
 const loading = document.querySelector<HTMLElement>('#map-loading')!;
 
-const channelLabels: Record<string, string> = {
-	co: 'Co-op',
-	mo: 'Morrisons fast',
-	sa: "Sainsbury's fast",
-};
-const channelColors = ['#203c39', '#8f897e', '#b6412f', '#ddd8cc', '#6f6b63'];
 const continuousColors = ['#e4e0d5', '#b9cbc5', '#77a59c', '#2f7069', '#173f3c'];
+const coverageColors = ['#e4e0d5', '#a9cbc2', '#4f8f83', '#173f3c'];
 const gbBounds: [[number, number], [number, number]] = [[-8.9, 49.7], [2.2, 61.0]];
 let overviewBounds = new LngLatBounds(gbBounds);
 
@@ -127,9 +122,13 @@ function updateTemporalHourLabel() {
 	temporalHourOutput.value = `${String(selectedHour()).padStart(2, '0')}:00`;
 }
 
-function continuousExpression(property: string, breaks: number[]): ExpressionSpecification {
+function continuousExpression(
+	property: string,
+	breaks: number[],
+	colors = continuousColors,
+): ExpressionSpecification {
 	const stops: Array<string | number | ExpressionSpecification> = [];
-	breaks.forEach((value, index) => stops.push(value, continuousColors[index]));
+	breaks.forEach((value, index) => stops.push(value, colors[Math.min(index, colors.length - 1)]));
 	return ['interpolate', ['linear'], ['coalesce', ['to-number', ['get', property]], breaks[0]], ...stops] as ExpressionSpecification;
 }
 
@@ -144,16 +143,15 @@ function continuousStateExpression(property: string, breaks: number[]): Expressi
 	] as ExpressionSpecification;
 }
 
-function categoryExpression(property: string): ExpressionSpecification {
+function coverageExpression(property: string): ExpressionSpecification {
 	return [
 		'match',
 		['to-number', ['get', property]],
-		0, channelColors[0],
-		1, channelColors[1],
-		2, channelColors[2],
-		3, channelColors[3],
-		4, channelColors[4],
-		'#ddd8cc',
+		0, coverageColors[0],
+		1, coverageColors[1],
+		2, coverageColors[2],
+		3, coverageColors[3],
+		coverageColors[0],
 	] as ExpressionSpecification;
 }
 
@@ -169,10 +167,10 @@ function paintExpression(): ExpressionSpecification {
 			selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks,
 		);
 	}
-	if (metric in channelLabels) {
+	if (metric === 'fc') {
 		return selectedParent
-			? categoryExpression(metric)
-			: continuousExpression(`${metric}_je`, [0, 5, 10, 20, 35]);
+			? coverageExpression(metric)
+			: continuousExpression(metric, [0, 1, 2, 3], coverageColors);
 	}
 	const config = manifest.metrics[metric];
 	return continuousExpression(metric, selectedParent ? config.child_breaks : config.breaks);
@@ -189,25 +187,30 @@ function updateLegend() {
 		`;
 		return;
 	}
-	if (metric in channelLabels && selectedParent) {
-		legend.innerHTML = `
-			<p>${escapeHTML(channelLabels[metric])} channel</p>
-			${Object.entries(manifest.channel_codes).map(([code, label]) => `
-				<span><i style="background:${channelColors[Number(code)]}"></i>${escapeHTML(label)}</span>
-			`).join('')}
-		`;
+	if (metric === 'fc') {
+		const config = manifest.metrics[metric];
+		if (selectedParent) {
+			const labels = ['None observed', 'One service', 'Two services', 'Three services'];
+			legend.innerHTML = `
+				<p>${escapeHTML(config.label)} · small area</p>
+				${labels.map((label, index) => `<span><i style="background:${coverageColors[index]}"></i>${index} · ${label}</span>`).join('')}
+			`;
+		} else {
+			legend.innerHTML = `
+				<p>${escapeHTML(config.label)} · ${escapeHTML(config.parent_label)}</p>
+				<div class="legend-ramp">${coverageColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
+				<div class="legend-values">${[0, 1, 2, 3].map((value) => `<span>${value}</span>`).join('')}</div>
+			`;
+		}
 		return;
 	}
-	const isChannel = metric in channelLabels;
-	const config = isChannel ? null : manifest.metrics[metric];
-	const breaks = isChannel ? [0, 5, 10, 20, 35] : (selectedParent ? config!.child_breaks : config!.breaks);
-	const label = isChannel
-		? `${channelLabels[metric]} · Just Eat-only share`
-		: `${config!.label} · ${selectedParent ? 'small area' : config!.parent_label}`;
+	const config = manifest.metrics[metric];
+	const breaks = selectedParent ? config.child_breaks : config.breaks;
+	const label = `${config.label} · ${selectedParent ? 'small area' : config.parent_label}`;
 	legend.innerHTML = `
 		<p>${escapeHTML(label)}</p>
 		<div class="legend-ramp">${continuousColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
-		<div class="legend-values">${breaks.map((value) => `<span>${metric === 'ffs' ? formatPercent(value, true) : formatNumber(value, 1)}${isChannel ? '%' : ''}</span>`).join('')}</div>
+		<div class="legend-values">${breaks.map((value) => `<span>${metric === 'ffs' ? formatPercent(value, true) : formatNumber(value, 1)}</span>`).join('')}</div>
 	`;
 }
 
@@ -308,8 +311,9 @@ function parentProfile(properties: Record<string, unknown>) {
 			<div><dt>Median fast food</dt><dd>${formatNumber(properties.ff, 1)}</dd></div>
 			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
 			<div><dt>Median grocery listings</dt><dd>${formatNumber(properties.g, 1)}</dd></div>
+			<div><dt>Mean rapid grocery services</dt><dd>${formatNumber(properties.fc, 2)} of 3</dd></div>
 		</dl>
-		<p class="profile-note">Small-area polygons are now loaded. Select one on the map for its exact area profile.</p>
+		<p class="profile-note">Small-area polygons are now loaded. Select one on the map for its exact area profile.${Number(properties.fu) > 0 ? ` ${formatNumber(properties.fu)} service-area observations are unresolved.` : ''}</p>
 	`;
 }
 
@@ -323,11 +327,10 @@ function childProfile(properties: Record<string, unknown>) {
 			<div><dt>Fast-food restaurants</dt><dd>${formatNumber(properties.ff)}</dd></div>
 			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
 			<div><dt>Grocery listings</dt><dd>${formatNumber(properties.g)}</dd></div>
+			<div><dt>Rapid grocery availability</dt><dd>${formatNumber(properties.fc)} of 3 services</dd></div>
 			<div><dt>Restaurants with unknown schedules</dt><dd>${formatNumber(properties.schedule_unknown)}</dd></div>
 		</dl>
-		<div class="profile-channels">
-			${Object.entries(channelLabels).map(([key, label]) => `<p><span>${escapeHTML(label)}</span><strong>${escapeHTML(manifest.channel_codes[String(properties[key])])}</strong></p>`).join('')}
-		</div>
+		${Number(properties.fu) > 0 ? `<p class="profile-note">Availability for ${formatNumber(properties.fu)} of the three services was unresolved. The displayed count includes observed availability only.</p>` : ''}
 	`;
 }
 
@@ -394,7 +397,7 @@ function clearSelection() {
 		<p class="profile-kicker">Great Britain overview</p>
 		<h2>Select a local authority</h2>
 		<p>Click the map or use the area selector to load small-area detail and exact values.</p>
-		<div class="profile-method"><strong>How to read this map</strong><p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA/Data Zone values or retailer channel states.</p></div>
+		<div class="profile-method"><strong>How to read this map</strong><p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA/Data Zone values, including rapid grocery availability from zero to three observed services.</p></div>
 	`;
 	updatePaint();
 }
