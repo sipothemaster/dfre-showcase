@@ -9,13 +9,13 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 
 <BaseLayout
 	title="Delivery availability explorer · HASP Data Service"
-	description="Explore area-level restaurant, fast-food and grocery delivery indicators across Great Britain."
+	description="Explore neighbourhood-level restaurant, fast-food and grocery delivery indicators across Great Britain."
 >
 	<main id="main-content" class="explorer-page hasp-explorer" data-base={base}>
 		<header class="explorer-header">
 			<div class="explorer-brand-copy">
 				<h1>Delivery availability explorer</h1>
-				<p>Area-level delivery indicators across Great Britain</p>
+				<p>Neighbourhood-level delivery indicators</p>
 			</div>
 			<a
 				class="hasp-brand-link"
@@ -68,12 +68,12 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<div class="explorer-control-group">
 							<label for="map-metric">Indicator</label>
 							<select id="map-metric">
-								<option value="fc" selected>Rapid grocery availability</option>
-								<option value="open">Opening deliverable restaurants</option>
-								<option value="r">Total deliverable restaurants</option>
-								<option value="ff">Fast-food restaurants</option>
-								<option value="ffs">Fast-food share</option>
-								<option value="g">Grocery listings</option>
+								<option value="fc" selected>Rapid grocery availability from retailers’ own services</option>
+								<option value="open">Deliverable restaurants by time of the day on aggregator platform</option>
+								<option value="r">Total deliverable restaurants on aggregator platform</option>
+								<option value="ff">Fast food restaurants on aggregator platform</option>
+								<option value="ffs">Fast food share on aggregator platform</option>
+								<option value="g">On demand grocery listings on aggregator platform</option>
 							</select>
 						</div>
 
@@ -131,7 +131,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 				<div class="explorer-map-heading">
 					<div>
 						<p class="explorer-main-kicker">Interactive map</p>
-						<h2>Explore delivery availability</h2>
+						<h2>Explore availability of delivered food and on-demand groceries from a major aggregator platform and retailers’ own services.</h2>
 					</div>
 					<p>Great Britain · representative-postcode design</p>
 				</div>
@@ -148,7 +148,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<p>Click the map or use the area selector to load small-area detail and exact values.</p>
 						<div class="profile-method">
 							<strong>How to read this map</strong>
-							<p>At national scale, colours show the mean number of rapid grocery services observed per small area. Select a local authority to see exact 0–3 availability levels for each LSOA or Data Zone.</p>
+							<p>At national scale, the map shows the mean values (across all neighbourhoods) for the chosen indicator by local authority. Select a single local authority to explore these data at the LSOA or Data Zone level.</p>
 						</div>
 					</aside>
 				</div>
@@ -174,24 +174,24 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					<h3 id="measure-heading">What each measure shows</h3>
 					<div class="about-card-grid">
 						<article class="about-card">
-							<h4>Rapid grocery availability</h4>
+							<h4>Rapid grocery availability (60-min delivery)</h4>
 							<p><strong>Measures:</strong> how many of three monitored rapid grocery services were observed as available.</p>
-							<p><strong>Read as:</strong> 0 means none were observed; 3 means all three were observed. Individual service names and states are not shown.</p>
+							<p><strong>Read as:</strong> no, low, medium or high coverage. Individual retailer names and service states are not shown.</p>
 						</article>
 						<article class="about-card">
-							<h4>Restaurant availability</h4>
+							<h4>Restaurant availability on aggregator platform</h4>
 							<p><strong>Measures:</strong> distinct restaurants available for delivery, fast-food restaurants and fast-food share.</p>
-							<p><strong>Read as:</strong> fast-food share is the proportion of deliverable restaurants classified as fast food after retail exclusions.</p>
+							<p><strong>Read as:</strong> fast-food share is the number of deliverable restaurants classified as fast food divided by all deliverable restaurants after retail exclusions. At local-authority level, the calculation pools restaurant counts across all neighbourhoods before calculating the share.</p>
 						</article>
 						<article class="about-card">
-							<h4>Opening deliverable restaurants</h4>
+							<h4>Deliverable restaurants by time of the day on aggregator platform</h4>
 							<p><strong>Measures:</strong> restaurants scheduled to be open for delivery at the selected day and hour.</p>
 							<p><strong>Read as:</strong> restaurants with missing schedules are excluded from the confirmed-open count; they are not assumed to be closed.</p>
 						</article>
 						<article class="about-card">
-							<h4>Grocery listings</h4>
+							<h4>On demand grocery listings on aggregator platform</h4>
 							<p><strong>Measures:</strong> grocery listings observed on the delivery platform for the representative postcode.</p>
-							<p><strong>Read as:</strong> a listing count, kept separate from the 0–3 rapid grocery service availability measure.</p>
+							<p><strong>Read as:</strong> a listing count, kept separate from the rapid grocery coverage measure.</p>
 						</article>
 					</div>
 				</section>
@@ -211,8 +211,8 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<details>
 							<summary>Read rapid grocery availability</summary>
 							<div>
-								<p>At national scale, each local authority is coloured by the mean number of observed services per small area, from 0 to 3.</p>
-								<p>After selecting a local authority, every small area receives an exact integer level: 0, 1, 2 or 3 observed services. Unresolved observations remain separate and are not counted as unavailable.</p>
+								<p>At national scale, each local authority is coloured by the mean rapid grocery coverage across its neighbourhoods, ranging from no coverage to high coverage.</p>
+								<p>After selecting a local authority, every small area is classified as having no, low, medium or high coverage. Unresolved observations remain separate and are not counted as unavailable.</p>
 							</div>
 						</details>
 						<details>
@@ -225,7 +225,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 						<details>
 							<summary>Check availability by day and hour</summary>
 							<div>
-								<p>Select “Opening deliverable restaurants”, then choose a day and hour. The map shows the number of restaurants confirmed by their recorded schedules to be open for delivery at that time.</p>
+								<p>Select “Deliverable restaurants by time of the day on aggregator platform”, then choose a day and hour. The map shows the number of restaurants confirmed by their recorded schedules to be open for delivery at that time.</p>
 							</div>
 						</details>
 					</div>

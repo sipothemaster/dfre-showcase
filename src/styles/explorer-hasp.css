@@ -300,6 +300,11 @@
 	grid-template-columns: repeat(5, 1fr);
 }
 
+.hasp-explorer .legend-ramp.legend-coverage-ramp,
+.hasp-explorer .legend-values.legend-coverage-values {
+	grid-template-columns: repeat(4, 1fr);
+}
+
 .hasp-explorer .legend-ramp {
 	overflow: hidden;
 	border: 1px solid rgba(0, 0, 0, 0.05);
@@ -327,6 +332,11 @@
 
 .hasp-explorer .legend-values span:last-child {
 	text-align: right;
+}
+
+.hasp-explorer .legend-coverage-values {
+	font-size: 9px;
+	line-height: 1.15;
 }
 
 .hasp-explorer .explorer-instruction {

@@ -60,6 +60,7 @@ const loading = document.querySelector<HTMLElement>('#map-loading')!;
 
 const continuousColors = ['#e4e0d5', '#b9cbc5', '#77a59c', '#2f7069', '#173f3c'];
 const coverageColors = ['#e4e0d5', '#a9cbc2', '#4f8f83', '#173f3c'];
+const coverageLabels = ['No coverage', 'Low coverage', 'Medium coverage', 'High coverage'];
 const gbBounds: [[number, number], [number, number]] = [[-8.9, 49.7], [2.2, 61.0]];
 let overviewBounds = new LngLatBounds(gbBounds);
 
@@ -96,6 +97,13 @@ function formatPercent(value: unknown, inputIsShare = false): string {
 	const number = Number(value);
 	if (!Number.isFinite(number)) return 'Not available';
 	return `${(inputIsShare ? number * 100 : number).toFixed(1)}%`;
+}
+
+function coverageLabel(value: unknown): string {
+	const level = Number(value);
+	return Number.isInteger(level) && level >= 0 && level < coverageLabels.length
+		? coverageLabels[level]
+		: 'Not available';
 }
 
 async function fetchGzipJSON<T>(url: string): Promise<T> {
@@ -190,16 +198,15 @@ function updateLegend() {
 	if (metric === 'fc') {
 		const config = manifest.metrics[metric];
 		if (selectedParent) {
-			const labels = ['None observed', 'One service', 'Two services', 'Three services'];
 			legend.innerHTML = `
 				<p>${escapeHTML(config.label)} · small area</p>
-				${labels.map((label, index) => `<span><i style="background:${coverageColors[index]}"></i>${index} · ${label}</span>`).join('')}
+				${coverageLabels.map((label, index) => `<span><i style="background:${coverageColors[index]}"></i>${label}</span>`).join('')}
 			`;
 		} else {
 			legend.innerHTML = `
 				<p>${escapeHTML(config.label)} · ${escapeHTML(config.parent_label)}</p>
-				<div class="legend-ramp">${coverageColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
-				<div class="legend-values">${[0, 1, 2, 3].map((value) => `<span>${value}</span>`).join('')}</div>
+				<div class="legend-ramp legend-coverage-ramp">${coverageColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
+				<div class="legend-values legend-coverage-values">${coverageLabels.map((label) => `<span>${label}</span>`).join('')}</div>
 			`;
 		}
 		return;
@@ -307,11 +314,11 @@ function parentProfile(properties: Record<string, unknown>) {
 		<h2>${escapeHTML(properties.name)}</h2>
 		<p>${formatNumber(properties.n)} LSOA/Data Zone markets · population ${formatNumber(properties.pop)}</p>
 		<dl class="profile-values">
-			<div><dt>Median total deliverable restaurants</dt><dd>${formatNumber(properties.r, 1)}</dd></div>
-			<div><dt>Median fast food</dt><dd>${formatNumber(properties.ff, 1)}</dd></div>
-			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
-			<div><dt>Median grocery listings</dt><dd>${formatNumber(properties.g, 1)}</dd></div>
-			<div><dt>Mean rapid grocery services</dt><dd>${formatNumber(properties.fc, 2)} of 3</dd></div>
+			<div><dt>Median total deliverable restaurants on aggregator platform</dt><dd>${formatNumber(properties.r, 1)}</dd></div>
+			<div><dt>Median fast food restaurants on aggregator platform</dt><dd>${formatNumber(properties.ff, 1)}</dd></div>
+			<div><dt>Fast food share on aggregator platform</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
+			<div><dt>Median on demand grocery listings on aggregator platform</dt><dd>${formatNumber(properties.g, 1)}</dd></div>
+			<div><dt>Mean rapid grocery coverage</dt><dd>${formatNumber(properties.fc, 2)}</dd></div>
 		</dl>
 		<p class="profile-note">Small-area polygons are now loaded. Select one on the map for its exact area profile.${Number(properties.fu) > 0 ? ` ${formatNumber(properties.fu)} service-area observations are unresolved.` : ''}</p>
 	`;
@@ -323,11 +330,11 @@ function childProfile(properties: Record<string, unknown>) {
 		<h2>${escapeHTML(properties.name)}</h2>
 		<p>${escapeHTML(properties.id)} · population ${formatNumber(properties.pop)}</p>
 		<dl class="profile-values">
-			<div><dt>Total deliverable restaurants</dt><dd>${formatNumber(properties.r)}</dd></div>
-			<div><dt>Fast-food restaurants</dt><dd>${formatNumber(properties.ff)}</dd></div>
-			<div><dt>Fast-food share</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
-			<div><dt>Grocery listings</dt><dd>${formatNumber(properties.g)}</dd></div>
-			<div><dt>Rapid grocery availability</dt><dd>${formatNumber(properties.fc)} of 3 services</dd></div>
+			<div><dt>Total deliverable restaurants on aggregator platform</dt><dd>${formatNumber(properties.r)}</dd></div>
+			<div><dt>Fast food restaurants on aggregator platform</dt><dd>${formatNumber(properties.ff)}</dd></div>
+			<div><dt>Fast food share on aggregator platform</dt><dd>${formatPercent(properties.ffs, true)}</dd></div>
+			<div><dt>On demand grocery listings on aggregator platform</dt><dd>${formatNumber(properties.g)}</dd></div>
+			<div><dt>Rapid grocery availability from retailers’ own services</dt><dd>${coverageLabel(properties.fc)}</dd></div>
 			<div><dt>Restaurants with unknown schedules</dt><dd>${formatNumber(properties.schedule_unknown)}</dd></div>
 		</dl>
 		${Number(properties.fu) > 0 ? `<p class="profile-note">Availability for ${formatNumber(properties.fu)} of the three services was unresolved. The displayed count includes observed availability only.</p>` : ''}
@@ -397,7 +404,7 @@ function clearSelection() {
 		<p class="profile-kicker">Great Britain overview</p>
 		<h2>Select a local authority</h2>
 		<p>Click the map or use the area selector to load small-area detail and exact values.</p>
-		<div class="profile-method"><strong>How to read this map</strong><p>At national scale, colours summarise LAD-level values. After selection, the same control maps LSOA/Data Zone values, including rapid grocery availability from zero to three observed services.</p></div>
+		<div class="profile-method"><strong>How to read this map</strong><p>At national scale, the map shows the mean values (across all neighbourhoods) for the chosen indicator by local authority. Select a single local authority to explore these data at the LSOA or Data Zone level.</p></div>
 	`;
 	updatePaint();
 }

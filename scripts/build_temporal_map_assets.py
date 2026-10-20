@@ -118,7 +118,7 @@ def build_temporal_assets(dashboard_root: Path, output_root: Path, cache_directo
 
     manifest = {
         "metric": "open_restaurant_count",
-        "label": "Opening deliverable restaurants",
+        "label": "Deliverable restaurants by time of the day on aggregator platform",
         "parent_label": "Median open per small area",
         "semantics": "Distinct deliverable non-retail restaurants with a recorded delivery interval open at the hour start; missing schedules are unknown, not confirmed closed. Not observed open-now availability.",
         "source_contract": json.loads((cache / "source_contract.json").read_text(encoding="utf-8")),
