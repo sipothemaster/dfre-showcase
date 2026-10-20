@@ -5,8 +5,8 @@
     "owner": "delivery-analytics",
     "upstreamFile": "outputs/web/retailer_channel_areas.csv",
     "localImportedFile": "public/data/v1/retailer_channel_areas.csv",
-    "bytes": 10335903,
-    "sha256": "fc7fa6dd388d770329ff93c0c2806d10f644c125d6928a06ed6e5f2ad9cad83d",
+    "bytes": 10340097,
+    "sha256": "49f6791e24fb5e39b492ea8ff9817dab50b4422e24865710ab1d27ea9c13c63a",
     "filter": "geography_code begins with E",
     "denominator": 33755,
     "unknownHandling": "Direct unresolved remains a separate category and is not converted to Direct only or Neither observed."
@@ -17,28 +17,28 @@
       "categories": [
         {
           "category": "Both channels",
-          "count": 20783,
-          "percent": 61.57
+          "count": 19444,
+          "percent": 57.6
         },
         {
           "category": "Direct only",
-          "count": 1189,
-          "percent": 3.52
+          "count": 421,
+          "percent": 1.25
         },
         {
           "category": "Just Eat only",
-          "count": 6707,
-          "percent": 19.87
+          "count": 8043,
+          "percent": 23.83
         },
         {
           "category": "Neither observed",
-          "count": 5065,
-          "percent": 15.01
+          "count": 5832,
+          "percent": 17.28
         },
         {
           "category": "Direct unresolved",
-          "count": 11,
-          "percent": 0.03
+          "count": 15,
+          "percent": 0.04
         }
       ]
     },

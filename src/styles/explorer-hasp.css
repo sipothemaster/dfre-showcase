@@ -783,6 +783,36 @@
 	background: var(--hasp-navy);
 }
 
+.hasp-explorer .about-citation {
+	margin-top: 16px;
+	padding: 18px;
+	border: 1px solid var(--hasp-border);
+	border-radius: 12px;
+	background: #f6f8ff;
+}
+
+.hasp-explorer .citation-text {
+	margin: 0;
+	color: var(--hasp-ink);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.hasp-explorer .citation-text cite {
+	font-style: italic;
+}
+
+.hasp-explorer .citation-placeholder {
+	color: var(--hasp-muted);
+}
+
+.hasp-explorer .citation-note {
+	margin: 10px 0 0;
+	color: var(--hasp-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
 @media (max-width: 68rem) {
 	.hasp-explorer .explorer-workspace {
 		grid-template-columns: 250px minmax(0, 1fr);

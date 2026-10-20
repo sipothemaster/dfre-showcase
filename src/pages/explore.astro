@@ -235,11 +235,24 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					<h3 id="sources-heading">Data sources</h3>
 					<ul class="about-source-list">
 						<li><strong>Digital delivery platform:</strong> restaurant listings, delivery coverage and recorded opening schedules from the DFRE platform collection pipeline. <span class="source-status">Planned for deployment on HASP</span></li>
-						<li><strong>Grocery retailer delivery:</strong> rapid-delivery availability from three monitored retailer-operated services. <span class="source-status">Planned for deployment on HASP</span></li>
+						<li>
+							<strong>Grocery retailer delivery:</strong> rapid-delivery availability from three monitored retailer-operated services.
+							<span class="source-status">Planned for deployment on HASP</span>
+						</li>
 						<li><strong>Small-area geography:</strong> ONS LSOA 2021 boundaries for England and Wales and Scottish Government Data Zone 2022 boundaries for Scotland. LAD 2024 boundaries support the national overview.</li>
 						<li><strong>Population:</strong> ONS mid-2024 small-area population estimates for England and Wales and 2022 Data Zone total population for Scotland.</li>
 					</ul>
-					<a class="about-primary-link" href={`${base}#pipeline`}>Read the full methods and data pipeline <span aria-hidden="true">→</span></a>
+					<a class="about-primary-link" href={`${base}#pipeline`}>Read the full methods and data pipeline</a>
+				</section>
+
+				<section class="about-citation" aria-labelledby="citation-heading">
+					<h3 id="citation-heading">Suggested citation</h3>
+					<p class="citation-text">
+						Xiao, C., Newing, A. and Nield, L. <span class="citation-placeholder">[Year]</span>.{' '}
+						<cite>Delivery Availability Explorer</cite>. Data asset prepared for the Healthy &amp; Sustainable Places Data Service.
+						Available at: <span class="citation-placeholder">[URL to be added after deployment]</span>.
+					</p>
+					<p class="citation-note">Please also cite the underlying delivery, geography and population data sources listed above.</p>
 				</section>
 			</section>
 		</div>

@@ -51,7 +51,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					<span>Data visualisation</span>
 				</div>
 				<div class="hero-actions">
-					<a class="primary-action" href={`${base}explore/`}>Explore the interactive map <span aria-hidden="true">→</span></a>
+					<a class="primary-action" href={`${base}explore/`}>Explore the interactive map</a>
 					<a class="secondary-action" href="#findings">Read the findings</a>
 				</div>
 				<div class="hero-code-links" aria-label="Selected public code repositories">
@@ -59,13 +59,19 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 					<span class="hero-code-item">
 						Python / GCP / BigQuery:{' '}
 						<a href="https://github.com/sipothemaster/delivery-availability-pipeline" target="_blank" rel="noreferrer">
-							delivery-availability-pipeline <span aria-hidden="true">↗</span>
+							delivery-availability-pipeline
 						</a>
 					</span>
 					<span class="hero-code-item">
 						Python / GeoPandas:{' '}
 						<a href="https://github.com/sipothemaster/delivery-analytics" target="_blank" rel="noreferrer">
-							delivery-analytics <span aria-hidden="true">↗</span>
+							delivery-analytics
+						</a>
+					</span>
+					<span class="hero-code-item">
+						Python / Playwright:{' '}
+						<a href="https://github.com/sipothemaster/grocery-delivery-availability" target="_blank" rel="noreferrer">
+							grocery-delivery-availability
 						</a>
 					</span>
 				</div>
@@ -117,14 +123,20 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 	</main>
 
 	<footer class="site-footer site-shell" id="contact">
-		<div class="contact-identity">
-			<p>Contact</p>
-			<strong>Chenrui Xiao</strong>
+		<div class="project-credits">
+			<div class="contact-identity">
+				<p>Data Scientist</p>
+				<strong>Chenrui Xiao</strong>
+			</div>
+			<div class="project-team-credit">
+				<p>Project Team</p>
+				<strong>Andy Newing · Lucie Nield</strong>
+			</div>
 		</div>
 		<nav class="contact-links" aria-label="Contact links">
 			<a href="mailto:chenruix.job@gmail.com">chenruix.job@gmail.com</a>
-			<a href="https://www.linkedin.com/in/chenrui-xiao-940378205/" target="_blank" rel="me noreferrer">LinkedIn <span aria-hidden="true">↗</span></a>
-			<a href="https://github.com/sipothemaster" target="_blank" rel="me noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+			<a href="https://www.linkedin.com/in/chenrui-xiao-940378205/" target="_blank" rel="me noreferrer">LinkedIn</a>
+			<a href="https://github.com/sipothemaster" target="_blank" rel="me noreferrer">GitHub</a>
 		</nav>
 	</footer>
 </BaseLayout>

@@ -15,18 +15,18 @@
     },
     {
       "path": "src/data/generated/retailer_channel_summary.json",
-      "bytes": 3881,
-      "sha256": "72c191cf2e31b0e8ca37eec61da7ff3e03d39bed413904c9b4b4a072e03e938f"
+      "bytes": 3934,
+      "sha256": "279c12d543ead76925764ae717064f6b11c5f620a459dc621dea4feb2cab976e"
     },
     {
       "path": "public/data/v1/retailer_channel_summary.json",
-      "bytes": 3881,
-      "sha256": "72c191cf2e31b0e8ca37eec61da7ff3e03d39bed413904c9b4b4a072e03e938f"
+      "bytes": 3934,
+      "sha256": "279c12d543ead76925764ae717064f6b11c5f620a459dc621dea4feb2cab976e"
     },
     {
       "path": "public/data/v1/retailer_channel_areas.csv",
-      "bytes": 10335903,
-      "sha256": "fc7fa6dd388d770329ff93c0c2806d10f644c125d6928a06ed6e5f2ad9cad83d"
+      "bytes": 10340097,
+      "sha256": "49f6791e24fb5e39b492ea8ff9817dab50b4422e24865710ab1d27ea9c13c63a"
     },
     {
       "path": "public/images/analysis/02_adjusted_imd_score_predictions.png",
@@ -35,8 +35,8 @@
     },
     {
       "path": "src/data/generated/retailer_channel_summary_england.json",
-      "bytes": 2638,
-      "sha256": "f6ec1deba20e09219cf01829a9d6e584a90e7e46e07449ff2312a949e806362f"
+      "bytes": 2636,
+      "sha256": "cfbca12c042c8302d0e4d320e46e90376a00f1ea26e929b0cf3baee9fe25e834"
     }
   ]
 }

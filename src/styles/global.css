@@ -196,7 +196,7 @@ h1 {
 }
 
 .hero-code-links > span:first-child {
-	grid-row: 1 / span 2;
+	grid-row: 1 / span 3;
 }
 
 .hero-code-links > .hero-code-item {
@@ -1594,11 +1594,17 @@ h1 {
 	font-family: 'DM Sans', Arial, sans-serif;
 	font-size: 0.68rem;
 	font-weight: 600;
-	white-space: nowrap;
+	line-height: 1.7;
+	text-align: right;
+	white-space: normal;
 }
 
 .repository-reference .repository-link {
 	font-size: inherit;
+}
+
+.repository-separator {
+	padding: 0 0.25rem;
 }
 
 .density-endpoint {
@@ -2447,7 +2453,19 @@ h1 {
 	gap: 0.35rem;
 }
 
-.contact-identity p {
+.project-credits {
+	display: flex;
+	align-items: flex-start;
+	gap: clamp(2rem, 5vw, 5rem);
+}
+
+.project-team-credit {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.contact-identity p,
+.project-team-credit p {
 	color: var(--focus-dark);
 	font-size: 0.68rem;
 	font-weight: 600;
@@ -2460,6 +2478,12 @@ h1 {
 	font-family: 'Newsreader', Georgia, serif;
 	font-size: clamp(1.6rem, 3vw, 2.4rem);
 	font-weight: 500;
+}
+
+.project-team-credit strong {
+	color: var(--ink-soft);
+	font-size: 0.92rem;
+	font-weight: 600;
 }
 
 .contact-links {
@@ -3119,6 +3143,12 @@ h1 {
 
 	.contact-links {
 		justify-content: flex-start;
+	}
+
+	.project-credits {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 1.25rem;
 	}
 
 	.platform-value {

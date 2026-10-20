@@ -3,39 +3,39 @@
   "claim_status": "descriptive",
   "geography": "43,064 representative-postcode LSOA/Data Zone markets in Great Britain",
   "justeat_source": "weekday_full_20260520 static delivery map",
-  "direct_source": "postcode-repaired retailer datasets assembled 2026-08-20",
+  "direct_source": "grocery-delivery-data-package-2026-10-19; FastDelivery for Co-op, Sainsbury's Chop Chop and Morrisons",
   "interpretation": "Just Eat only identifies areas where a brand was observed on Just Eat but the compared direct service returned No. It does not establish that Just Eat caused an expansion in coverage.",
   "comparisons": [
     {
       "comparison": "coop",
       "retailer_label": "Co-op",
-      "direct_service": "Co-op direct delivery",
+      "direct_service": "Co-op rapid delivery (60-min)",
       "justeat_service": "Co-op on Just Eat",
       "areas": 43064,
       "categories": [
         {
           "category": "Both channels",
-          "count": 25618,
-          "percent": 59.49
+          "count": 23811,
+          "percent": 55.29
         },
         {
           "category": "Direct only",
-          "count": 2158,
-          "percent": 5.01
+          "count": 666,
+          "percent": 1.55
         },
         {
           "category": "Just Eat only",
-          "count": 8282,
-          "percent": 19.23
+          "count": 10086,
+          "percent": 23.42
         },
         {
           "category": "Neither observed",
-          "count": 6995,
-          "percent": 16.24
+          "count": 8486,
+          "percent": 19.71
         },
         {
           "category": "Direct unresolved",
-          "count": 11,
+          "count": 15,
           "percent": 0.03
         }
       ]

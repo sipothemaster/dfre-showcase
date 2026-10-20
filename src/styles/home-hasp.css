@@ -374,6 +374,12 @@ body.hasp-story {
 .hasp-story .contact-identity strong {
 	color: var(--story-navy);
 	font-family: ui-monospace, 'Cascadia Code', Consolas, 'Liberation Mono', monospace !important;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.hasp-story .project-team-credit strong {
+	font-family: ui-monospace, 'Cascadia Code', Consolas, 'Liberation Mono', monospace !important;
 }
 
 @media (max-width: 900px) {
