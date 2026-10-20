@@ -106,6 +106,40 @@ function coverageLabel(value: unknown): string {
 		: 'Not available';
 }
 
+function roundedLegendBreaks(metric: string, values: number[]): number[] {
+	const increment = metric === 'ffs' ? 0.01 : 1;
+	const rounded = values.map((value, index) => {
+		if (metric === 'ffs') return Math.round(value * 100) / 100;
+		if (index === 0 && value <= 5) return 0;
+		const absolute = Math.abs(value);
+		const step = absolute >= 500 ? 50 : absolute >= 100 ? 25 : absolute >= 25 ? 5 : 1;
+		return Math.round(value / step) * step;
+	});
+
+	const ordered: number[] = [];
+	for (const value of rounded) {
+		const previous = ordered.at(-1);
+		ordered.push(previous === undefined || value > previous ? value : previous + increment);
+	}
+	return ordered;
+}
+
+function continuousLegend(breaks: number[], metric: string): string {
+	const labels = breaks
+		.map((value, index) => {
+			const position = (index / breaks.length) * 100;
+			const label = metric === 'ffs' ? `${Math.round(value * 100)}%` : formatNumber(value);
+			return `<span style="left:${position}%">${label}</span>`;
+		})
+		.join('');
+	return `
+		<div class="legend-scale">
+			<div class="legend-ramp legend-ramp-stepped">${continuousColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
+			<div class="legend-ticks">${labels}<span class="legend-terminal-tick" style="left:100%" aria-hidden="true"></span></div>
+		</div>
+	`;
+}
+
 async function fetchGzipJSON<T>(url: string): Promise<T> {
 	const response = await fetch(url);
 	if (!response.ok) throw new Error(`Temporal data returned ${response.status}`);
@@ -136,17 +170,17 @@ function continuousExpression(
 	colors = continuousColors,
 ): ExpressionSpecification {
 	const stops: Array<string | number | ExpressionSpecification> = [];
-	breaks.forEach((value, index) => stops.push(value, colors[Math.min(index, colors.length - 1)]));
-	return ['interpolate', ['linear'], ['coalesce', ['to-number', ['get', property]], breaks[0]], ...stops] as ExpressionSpecification;
+	breaks.slice(1).forEach((value, index) => stops.push(value, colors[index + 1]));
+	return ['step', ['coalesce', ['to-number', ['get', property]], breaks[0]], colors[0], ...stops] as ExpressionSpecification;
 }
 
 function continuousStateExpression(property: string, breaks: number[]): ExpressionSpecification {
 	const stops: Array<string | number | ExpressionSpecification> = [];
-	breaks.forEach((value, index) => stops.push(value, continuousColors[index]));
+	breaks.slice(1).forEach((value, index) => stops.push(value, continuousColors[index + 1]));
 	return [
-		'interpolate',
-		['linear'],
+		'step',
 		['coalesce', ['to-number', ['feature-state', property]], breaks[0]],
+		continuousColors[0],
 		...stops,
 	] as ExpressionSpecification;
 }
@@ -172,7 +206,7 @@ function paintExpression(): ExpressionSpecification {
 	if (metric === 'open' && temporalManifest) {
 		return continuousStateExpression(
 			'open',
-			selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks,
+			roundedLegendBreaks('open', selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks),
 		);
 	}
 	if (metric === 'fc') {
@@ -181,17 +215,22 @@ function paintExpression(): ExpressionSpecification {
 			: continuousExpression(metric, [0, 1, 2, 3], coverageColors);
 	}
 	const config = manifest.metrics[metric];
-	return continuousExpression(metric, selectedParent ? config.child_breaks : config.breaks);
+	return continuousExpression(
+		metric,
+		roundedLegendBreaks(metric, selectedParent ? config.child_breaks : config.breaks),
+	);
 }
 
 function updateLegend() {
 	const metric = currentMetric();
 	if (metric === 'open' && temporalManifest) {
-		const breaks = selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks;
+		const breaks = roundedLegendBreaks(
+			'open',
+			selectedParent ? temporalManifest.child_breaks : temporalManifest.breaks,
+		);
 		legend.innerHTML = `
 			<p>${escapeHTML(temporalManifest.label)} · ${escapeHTML(temporalLabel())} · ${selectedParent ? 'small area' : escapeHTML(temporalManifest.parent_label)}</p>
-			<div class="legend-ramp">${continuousColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
-			<div class="legend-values">${breaks.map((value) => `<span>${formatNumber(value, 1)}</span>`).join('')}</div>
+			${continuousLegend(breaks, 'open')}
 		`;
 		return;
 	}
@@ -212,12 +251,11 @@ function updateLegend() {
 		return;
 	}
 	const config = manifest.metrics[metric];
-	const breaks = selectedParent ? config.child_breaks : config.breaks;
+	const breaks = roundedLegendBreaks(metric, selectedParent ? config.child_breaks : config.breaks);
 	const label = `${config.label} · ${selectedParent ? 'small area' : config.parent_label}`;
 	legend.innerHTML = `
 		<p>${escapeHTML(label)}</p>
-		<div class="legend-ramp">${continuousColors.map((color) => `<i style="background:${color}"></i>`).join('')}</div>
-		<div class="legend-values">${breaks.map((value) => `<span>${metric === 'ffs' ? formatPercent(value, true) : formatNumber(value, 1)}</span>`).join('')}</div>
+		${continuousLegend(breaks, metric)}
 	`;
 }
 
